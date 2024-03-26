@@ -1,0 +1,92 @@
+[
+	{
+		"title": "producto 1",
+		"descripcion": "gran producto",
+		"precio": 1000,
+		"img": "./img",
+		"code": "ABC124",
+		"id": 1,
+		"stock": 2
+	},
+	{
+		"title": "producto 2",
+		"descripcion": "pesimo producto",
+		"precio": 1000,
+		"img": "./img",
+		"code": "ABC123",
+		"id": 2,
+		"stock": 2
+	},
+	{
+		"title": "producto 3",
+		"descripcion": "medio producto",
+		"precio": 1000,
+		"img": "./img",
+		"code": "ABC125",
+		"id": 3,
+		"stock": 2
+	},
+	{
+		"title": "producto 4",
+		"descripcion": "medio producto",
+		"precio": 1000,
+		"img": "./img",
+		"code": "ABC122",
+		"id": 4,
+		"stock": 2
+	},
+	{
+		"title": "producto 5",
+		"descripcion": "medio producto",
+		"precio": 1000,
+		"img": "./img",
+		"code": "ABC126",
+		"id": 5,
+		"stock": 2
+	},
+	{
+		"title": "producto 6",
+		"descripcion": "medio producto",
+		"precio": 1000,
+		"img": "./img",
+		"code": "ABC127",
+		"id": 6,
+		"stock": 2
+	},
+	{
+		"title": "producto 7",
+		"descripcion": "medio producto",
+		"precio": 1000,
+		"img": "./img",
+		"code": "ABC128",
+		"id": 7,
+		"stock": 2
+	},
+	{
+		"title": "producto 8",
+		"descripcion": "medio producto",
+		"precio": 1000,
+		"img": "./img",
+		"code": "ABC129",
+		"id": 8,
+		"stock": 2
+	},
+	{
+		"title": "producto 9",
+		"descripcion": "medio producto",
+		"precio": 1000,
+		"img": "./img",
+		"code": "ABC130",
+		"id": 9,
+		"stock": 2
+	},
+	{
+		"title": "producto 10",
+		"descripcion": "medio producto",
+		"precio": 1000,
+		"img": "./img",
+		"code": "ABC131",
+		"id": 10,
+		"stock": 2
+	}
+]
