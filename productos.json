@@ -6,7 +6,9 @@
 		"img": "./img",
 		"code": "ABC124",
 		"id": 1,
-		"stock": 2
+		"stock": 2,
+		"category": "consola",
+		"status": true
 	},
 	{
 		"title": "producto 2",
@@ -15,7 +17,9 @@
 		"img": "./img",
 		"code": "ABC123",
 		"id": 2,
-		"stock": 2
+		"stock": 2,
+		"category": "PC",
+		"status": true
 	},
 	{
 		"title": "producto 3",
@@ -24,7 +28,9 @@
 		"img": "./img",
 		"code": "ABC125",
 		"id": 3,
-		"stock": 2
+		"stock": 2,
+		"category": "consola",
+		"status": true
 	},
 	{
 		"title": "producto 4",
@@ -33,7 +39,9 @@
 		"img": "./img",
 		"code": "ABC122",
 		"id": 4,
-		"stock": 2
+		"stock": 2,
+		"category": "telefono",
+		"status": true
 	},
 	{
 		"title": "producto 5",
@@ -42,7 +50,9 @@
 		"img": "./img",
 		"code": "ABC126",
 		"id": 5,
-		"stock": 2
+		"stock": 2,
+		"category": "PC",
+		"status": true
 	},
 	{
 		"title": "producto 6",
@@ -51,7 +61,9 @@
 		"img": "./img",
 		"code": "ABC127",
 		"id": 6,
-		"stock": 2
+		"stock": 2,
+		"category": "telefono",
+		"status": true
 	},
 	{
 		"title": "producto 7",
@@ -60,7 +72,9 @@
 		"img": "./img",
 		"code": "ABC128",
 		"id": 7,
-		"stock": 2
+		"stock": 2,
+		"category": "electrodomestico",
+		"status": true
 	},
 	{
 		"title": "producto 8",
@@ -69,7 +83,9 @@
 		"img": "./img",
 		"code": "ABC129",
 		"id": 8,
-		"stock": 2
+		"stock": 2,
+		"category": "PC",
+		"status": true
 	},
 	{
 		"title": "producto 9",
@@ -78,7 +94,9 @@
 		"img": "./img",
 		"code": "ABC130",
 		"id": 9,
-		"stock": 2
+		"stock": 2,
+		"category": "consola",
+		"status": true
 	},
 	{
 		"title": "producto 10",
@@ -87,6 +105,8 @@
 		"img": "./img",
 		"code": "ABC131",
 		"id": 10,
-		"stock": 2
+		"stock": 2,
+		"category": "electrodomestico",
+		"status": true
 	}
 ]

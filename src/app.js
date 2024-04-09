@@ -1,32 +1,24 @@
-const express = require('express');
-const productManager = require('./ProductManager');
+import express from 'express';
+import ProductRouter from './routes/products.router.js';
+import CartsRouter from './routes/carts.router.js';
+import handlebars from 'express-handlebars'
 
 const app = express();
-const productoManager = new productManager();
 
-app.get('/products', async (req, res) => {
-    try {
-        const { limit } = req.query
-        const productos = await productoManager.getProductos();
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
-        if (!limit || limit >= productos.length) return res.send(productos);
+app.engine('handlebars', handlebars.engine());
 
-        const productosLimitados = productos.filter(p => p.id <= limit);
-        res.send(productosLimitados);
-    } catch (error) {
-        console.log(error);
-    }
+app.set() //primer argumento, nombre de la carpeta, segundo, direccion
+app.set('view engine', 'handlebars')
+
+app.get('/', async (req, res) => {
+    res.status(200).send('<h1>Bienvenido a mi ecommerce</h1>');
 });
 
-app.get('/products/:pid', async (req, res) => {
-    const productos = await productoManager.getProductos();
-    const id = req.params.pid;
-
-    if(id > productos.length || id == 0) return res.send('El producto no existe');
-
-    const productosFiltradosId = productos.find(p => p.id == id); 
-    res.send(productosFiltradosId);
-});
+app.use('/api/products', ProductRouter);
+app.use('/api/carts', CartsRouter);
 
 app.listen(8080, error => {
     console.log('El servidor funciona');

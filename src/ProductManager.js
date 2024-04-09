@@ -6,10 +6,12 @@
  * @property {URL} img
  * @property {string} code
  * @property {number} stock
+ * @property {string} category
+ * @property {boolean} status
 */
 
-const fs = require('fs');
-const path = './productos.json'
+import fs from 'fs';
+const path = 'productos.json';
 
 class productManager {
 
@@ -30,33 +32,38 @@ class productManager {
         }
     }
 
-    async agregarProducto(title, descripcion, precio, img, code, stock) {
+    async agregarProducto(title, descripcion, precio, img, code, stock, category ) {
         try {
+            
             const existeProducto = this.#productos.some(producto => producto.code === code);
 
-            if (title == undefined || descripcion == undefined || precio == undefined || img == undefined || code == undefined || stock == undefined) {
+            if (!title || !descripcion || !precio || !img || !code || !stock || !category) {
                 console.log('Por favor, complete todos los campos para agregar producto');
             } else if (existeProducto) {
                 console.log('Los productos no pueden compartir el code');
             } else {
-                /** @type {Producto} */
-                const producto = {
+                const nuevoProducto = {
                     title,
                     descripcion,
                     precio,
                     img,
                     code,
                     id: this.#getIncrementarId(),
-                    stock
+                    stock,
+                    category,
+                    status: true
                 };
 
-                this.#productos.push(producto);
+                this.#productos.push(nuevoProducto);
                 await fs.promises.writeFile(this.path, JSON.stringify(this.#productos, null, '\t'), 'utf-8');
+
+                return nuevoProducto;
             }
         } catch (error) {
             console.log(error);
         }
     }
+
 
     #getIncrementarId() {
         if (this.#productos.length === 0) {
@@ -115,16 +122,17 @@ class productManager {
 // MANERA ASYNC DE REPRODUCIR EL CODE
 const reproducirPrograma = async () => {
     const productoManager = new productManager();
-    await productoManager.agregarProducto('producto 1', 'gran producto', 1000, './img', 'ABC124', 2);
-    await productoManager.agregarProducto('producto 2', 'pesimo producto', 1000, './img', 'ABC123', 2);
-    await productoManager.agregarProducto('producto 3', 'medio producto', 1000, './img', 'ABC125', 2);
-    await productoManager.agregarProducto('producto 4', 'medio producto', 1000, './img', 'ABC122', 2);
-    await productoManager.agregarProducto('producto 5', 'medio producto', 1000, './img', 'ABC126', 2);
-    await productoManager.agregarProducto('producto 6', 'medio producto', 1000, './img', 'ABC127', 2);
-    await productoManager.agregarProducto('producto 7', 'medio producto', 1000, './img', 'ABC128', 2);
-    await productoManager.agregarProducto('producto 8', 'medio producto', 1000, './img', 'ABC129', 2);
-    await productoManager.agregarProducto('producto 9', 'medio producto', 1000, './img', 'ABC130', 2);
-    await productoManager.agregarProducto('producto 10', 'medio producto', 1000, './img', 'ABC131', 2);
+    console.log(await productoManager.getProductos());
+    await productoManager.agregarProducto('producto 1', 'gran producto', 1000, './img', 'ABC124', 2, 'consola');
+    await productoManager.agregarProducto('producto 2', 'pesimo producto', 1000, './img', 'ABC123', 2, 'PC');
+    await productoManager.agregarProducto('producto 3', 'medio producto', 1000, './img', 'ABC125', 2, 'consola');
+    await productoManager.agregarProducto('producto 4', 'medio producto', 1000, './img', 'ABC122', 2, 'telefono');
+    await productoManager.agregarProducto('producto 5', 'medio producto', 1000, './img', 'ABC126', 2, 'PC');
+    await productoManager.agregarProducto('producto 6', 'medio producto', 1000, './img', 'ABC127', 2, 'telefono');
+    await productoManager.agregarProducto('producto 7', 'medio producto', 1000, './img', 'ABC128', 2, 'electrodomestico');
+    await productoManager.agregarProducto('producto 8', 'medio producto', 1000, './img', 'ABC129', 2, 'PC');
+    await productoManager.agregarProducto('producto 9', 'medio producto', 1000, './img', 'ABC130', 2, 'consola');
+    await productoManager.agregarProducto('producto 10', 'medio producto', 1000, './img', 'ABC131', 2, 'electrodomestico');
     // console.log(await productoManager.getProductos());
     // console.log(await productoManager.getProductById(3));
     // await productoManager.updateProduct(3, undefined, undefined, 1300, undefined, undefined, 3);
@@ -136,4 +144,4 @@ const reproducirPrograma = async () => {
 
 reproducirPrograma();
 
-module.exports = productManager;
+export default productManager;
