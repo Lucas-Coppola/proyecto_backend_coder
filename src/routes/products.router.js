@@ -5,10 +5,9 @@ import fs from 'fs'
 const path = './productos.json'
 
 const productoManager = new productManager();
+const productos = await productoManager.getProductos();
 
 const router = Router();
-
-const productos = await productoManager.getProductos();
 
 router.get('/', async (req, res) => {
     try {
@@ -32,8 +31,6 @@ router.get('/:pid', (req, res) => {
     res.send(productosFiltradosId);
 });
 
-
-//duda: cual es el json que modfica
 router.post('/', async (req, res) => {
     try {
         const { title, descripcion, precio, img, code, stock, category } = req.body
