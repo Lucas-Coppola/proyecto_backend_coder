@@ -1,0 +1,21 @@
+<main>
+    <h2>Agregar Producto:</h2>
+    <form id="formProductsRealTime" action="">
+        <input type="text" id="title" placeholder="Nombre">
+        <input type="text" id="descripcion" placeholder="Descripcion">
+        <input type="number" id="precio" placeholder="Precio"> 
+        <input type="text" id="img" placeholder="Imagen">
+        <input type="text" id="code" placeholder="Codigo">
+        <input type="number" id="stock" placeholder="Stock">
+        <input type="text" id="category" placeholder="Categoria">
+        <button id="btnAgregar">Agregar</button>
+        <button id="btnEliminar"> Eliminar </button>
+    </form>
+
+    <div id="productosRealTime">
+
+    </div>
+</main>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/realTimeProducts.js" type="module"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

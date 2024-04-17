@@ -1,0 +1,21 @@
+<main>
+    <h1>Bienvenidos al ecommerce de Coppola</h1>
+    <h2>Productos: </h2>
+    <div class="productos">
+        {{#each productos}}
+            <div class="productosEach">
+                <p> Nombre del producto: {{this.title}} </p>
+                <p> Descripcion: {{this.descripcion}} </p>
+                <p> ${{this.precio}} </p>
+                <p> {{this.img}} </p>
+                <p> Codigo: {{this.code}} </p>
+                <p> Id: {{this.id}} </p>
+                <p> Stock: {{this.stock}}</p>
+                <p> Category: {{this.category}} </p>
+                <p> Status: {{this.status}} </p>
+            </div>
+        {{/each}}
+    </div>
+</main>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/home.js"></script>
