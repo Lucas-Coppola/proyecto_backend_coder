@@ -2,7 +2,6 @@ console.log('funcionando');
 
 const socket = io();
 
-const form = document.getElementById('formProductsRealTime');
 const eliminarProducto = document.getElementById('btnEliminar');
 const agregarProducto = document.getElementById('btnAgregar');
 

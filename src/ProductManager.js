@@ -32,7 +32,7 @@ class productManager {
         }
     }
 
-    async agregarProducto(title, descripcion, precio, img, code, stock, category ) {
+    async agregarProducto(title, descripcion, precio, img, code, stock, category) {
         try {
             
             const existeProducto = this.#productos.some(producto => producto.code === code);

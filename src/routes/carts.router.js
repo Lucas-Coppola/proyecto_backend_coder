@@ -1,44 +1,19 @@
 import { Router } from 'express';
-import productManager from '../ProductManager.js';
-import fs from 'fs'
-
-const productoManager = new productManager();
-const productos = await productoManager.getProductos();
+import { cartsModel } from '../Dao/models/products.models.js';
+import { productsModel } from '../Dao/models/products.models.js';
 
 const router = Router();
 
-const path = './carrito.json'
-
-async function leerArchivo() {
-    try {
-        const leerProductos = await fs.promises.readFile(path, 'utf-8');
-        return JSON.parse(leerProductos);
-    } catch (error) {
-        return carrito = [];
-    }
-}
-
-const carrito = await leerArchivo();
-
 router.post('/', async (req, res) => {
-    const nuevoCarrito = {
-        id: carrito.length + 1,
-        products: []
-    };
-
-    carrito.push(nuevoCarrito);
-    await fs.promises.writeFile(path, JSON.stringify(carrito, null, '\t'), 'utf-8');
-    console.log(carrito);
+    
+    const nuevoCarrito = await cartsModel.create(req.body);
 
     res.status(200).send({status: 'success', payload: nuevoCarrito});
 });
 
 router.get('/:cid', async (req, res) => {
     const id = req.params.cid;
-
-    const carritoEncontrado = carrito.find(carrito => carrito.id == id);
-
-    if(!carritoEncontrado) return res.send('Carrito inexistente');
+    const carritoEncontrado = await cartsModel.findOne({_id: id});
 
     res.send(carritoEncontrado);
 });
@@ -47,20 +22,23 @@ router.post('/:cid/product/:pid', async (req, res) => {
     const id = req.params.cid;
     const pid = req.params.pid;
 
-    const carritoEncontrado = carrito.find(carrito => carrito.id == id);
-    const productoEncontrado = productos.find(p => p.id == pid);
-    const productoEnCarrito = carritoEncontrado.products.find(item => item.id == pid);
+    const carritoEncontrado = await cartsModel.findOne({_id: id});
+    const productoEncontrado = await productsModel.findOne({ _id: pid });
+    const productoEnCarrito = carritoEncontrado.products.find(item => item._id == pid);
 
     if(productoEnCarrito) {
+        console.log(productoEnCarrito);
         productoEnCarrito.cantidad++;
+        carritoEncontrado.markModified('products');
     } else {
-        carritoEncontrado.products.push({ id: productoEncontrado.id, cantidad: 1});
+        carritoEncontrado.products.push({_id: productoEncontrado.id, cantidad: 1});
     }
-    await fs.promises.writeFile(path, JSON.stringify(carrito, null, '\t'), 'utf-8');
 
+    if(!carritoEncontrado && !productoEncontrado && !productoEnCarrito) return res.send('Carrito o producto inexistente');
+
+    await carritoEncontrado.save();
+    
     res.send({status: 'success', payload: `${productoEncontrado} agregado al carrito`});
-
-    if(!carritoEncontrado || !productoEncontrado || !productoEnCarrito) return res.send('Carrito o producto inexistente');
 });
 
 export default router

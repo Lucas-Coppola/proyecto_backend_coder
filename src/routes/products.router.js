@@ -1,11 +1,5 @@
 import { Router } from 'express';
-import productManager from '../ProductManager.js';
-import fs from 'fs'
-
-const path = './productos.json'
-
-const productoManager = new productManager();
-const productos = await productoManager.getProductos();
+import { productsModel } from '../Dao/models/products.models.js';
 
 const router = Router();
 
@@ -13,21 +7,23 @@ router.get('/', async (req, res) => {
     try {
         const { limit } = req.query
 
+        const productos = await productsModel.find({});
+
+        const productosLimitados = productos.slice(0, limit);
+
         if (!limit || limit >= productos.length) return res.send(productos);
 
-        const productosLimitados = productos.filter(p => p.id <= limit);
         res.send(productosLimitados);
     } catch (error) {
         console.log(error);
     }
 });
 
-router.get('/:pid', (req, res) => {
+router.get('/:pid', async (req, res) => {
     const id = req.params.pid;
 
-    if(id > productos.length || id == 0) return res.send('El producto no existe');
+    const productosFiltradosId = await productsModel.findOne({ _id: id });
 
-    const productosFiltradosId = productos.find(p => p.id == id); 
     res.send(productosFiltradosId);
 });
 
@@ -35,33 +31,20 @@ router.post('/', async (req, res) => {
     try {
         const { title, descripcion, precio, img, code, stock, category } = req.body
 
-        const existeProducto = productos.some( producto => producto.code == code );
+        const existeProducto = await productsModel.findOne({code});
 
         if (!title || !descripcion || !precio || !img || !code || !stock || !category) {
             console.log('Por favor, complete todos los campos para agregar producto');
-            return res.send({status: 'error', error: 'faltan campos'});
-        } else if (existeProducto) {
+            return res.send({ status: 'error', error: 'faltan campos' });
+        }
+        else if (existeProducto) {
             console.log('Los productos no pueden compartir el code');
-            return res.send({status: 'error', error: 'los productos no pueden compartir el code'});
+            return res.send({ status: 'error', error: 'los productos no pueden compartir el code' });
         }
 
-        const productoAgregado = {
-            title,
-            descripcion,
-            precio, 
-            img,
-            code,
-            id: productos.at(-1).id + 1,
-            stock,
-            category,
-            status: true
-        }
-
-        productos.push(productoAgregado);
-        console.log(productos);
-        await fs.promises.writeFile(path, JSON.stringify(productos, null, '\t'), 'utf-8');
-
-        res.status(200).send({status: 'success', payload: productoAgregado});
+        const productoAgregado = await productsModel.create(req.body);
+        
+        res.status(200).send({ status: 'success', payload: productoAgregado });
 
     } catch (error) {
         console.log(error);
@@ -70,28 +53,31 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:pid', async (req, res) => {
-    const id = req.params.pid;
-    const productoActualizado = req.body
+    try {
+        const id = req.params.pid;
+        const { title, descripcion, precio, img, code, stock, category } = req.body
 
-    const productoIndex = productos.findIndex(producto => producto.id == Number(id));
+        const productoActualizado = await productsModel.updateOne({ _id: id }, { title, descripcion, precio, img, code, stock, category });
 
-    if( productoIndex === -1 ) return res.send({status: 'error', error: 'el producto no fue encontrado'});
+        if (!title || !descripcion || !precio || !img || !code || !stock || !category) {
+            console.log('Por favor, complete todos los campos para actualizar');
+            return res.send({ status: 'error', error: 'faltan campos' });
+        }
 
-    productos[productoIndex] = { id: Number(id), ...productoActualizado }
-    await fs.promises.writeFile(path, JSON.stringify(productos, null, '\t'), 'utf-8');
+        res.status(200).send({ status: 'success', payload: productoActualizado });
 
-    res.status(200).send({status: 'success', payload: productoActualizado});
+    } catch (error) {
+        console.log(error);
+        return res.send({ status: 'error', error: 'Not found' });
+    }
 });
 
 router.delete('/:pid', async (req, res) => {
     const id = req.params.pid;
 
-    if(id > productos.length || id == 0) return res.send({status: 'error', error: 'el producto no fue encontrado'})
+    const productoEliminado = await productsModel.deleteOne({ _id: id })
 
-    const productoEliminado = productos.filter(producto => producto.id !== Number(id));
-    await fs.promises.writeFile(path, JSON.stringify(productoEliminado, null, '\t'), 'utf-8');
-
-    res.status(200).send({status: 'success', payload: productoEliminado});
+    res.status(200).send({ status: 'success', payload: productoEliminado });
 });
 
 export default router

@@ -1,8 +1,11 @@
 import { Router } from "express";
 import productManager from '../ProductManager.js';
+// import { productsSocket } from "../server/productsServer.js";
+// import { socketServer } from "../app.js";
+// import { productSocket } from "../app.js";
 
 const productoManager = new productManager();
-const productos = await productoManager.getProductos();
+let productos = await productoManager.getProductos();
 
 const router = Router();
 
