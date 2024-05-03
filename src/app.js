@@ -9,7 +9,7 @@ import { Server } from 'socket.io';
 import productManager from './ProductManager.js';
 import fs from 'fs'
 import mongoose from 'mongoose'
-import { messagesModel } from './Dao/models/products.models.js';
+import { messagesModel } from './Dao/models/mongoDB.models.js';
 
 const productoManager = new productManager();
 let productos = await productoManager.getProductos();
