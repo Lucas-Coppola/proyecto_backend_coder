@@ -1,0 +1,23 @@
+<div>
+    <h1>Productos</h1>
+    {{#each productos}}
+        <p> Nombre del producto: {{this.title}} </p>
+        <p> Descripcion: {{this.descripcion}} </p>
+        <p> ${{this.precio}} </p>
+        <p> {{this.img}} </p>
+        <p> Codigo: {{this.code}} </p>
+        <p> Id: {{this._id}} </p>
+        <p> Stock: {{this.stock}}</p>
+        <p> Category: {{this.category}} </p>
+        <button class="btnAgregarCarrito" data-id="{{this._id}}"> Agregar al carrito </button>
+        <hr>
+    {{/each}}
+    {{#if hasPrevPage}}
+    <a href="/products?numPage={{prevPage}}&limit={{queryOptions.limit}}&sort={{queryOptions.sort.precio}}"> Anterior </a>
+    {{/if}}
+    <p>{{page}}</p>
+    {{#if hasNextPage}}
+    <a href="/products?numPage={{nextPage}}&limit={{queryOptions.limit}}&sort={{queryOptions.sort.precio}}"> Siguiente </a>
+    {{/if}}
+</div>
+<script type="module" src="/js/productsCarrito.js" ></script>

@@ -71,7 +71,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:pid', async (req, res) => {
     const id = req.params.pid;
-    const productoActualizado = req.body
+    const productoActualizado = req.body;
 
     const productoIndex = productos.findIndex(producto => producto.id == Number(id));
 

@@ -1,11 +1,12 @@
 import { Schema, model } from "mongoose";
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 const productsCollection = 'productos'
 const cartsCollection = 'carts'
 const messagesCollection = 'messages'
 
 const productsSchema = new Schema({
-    title: String, 
+    title: String,
     descripcion: String,
     precio: Number,
     img: String,
@@ -16,8 +17,15 @@ const productsSchema = new Schema({
 });
 
 const cartsSchema = new Schema({
-    id: Number,
-    products: Array
+    products: {
+        type: [{
+            product: {
+                type: Schema.Types.ObjectId,
+                ref: 'productos'
+            },
+            cantidad: Number
+        }]
+    }
 });
 
 const messagesSchema = new Schema([{
@@ -25,7 +33,13 @@ const messagesSchema = new Schema([{
     message: String
 }]);
 
-export const productsModel = model(productsCollection, productsSchema); 
+productsSchema.plugin(mongoosePaginate);
+
+export const productsModel = model(productsCollection, productsSchema);
+
+cartsSchema.pre('findOne', function () {
+    this.populate('products.product');
+});
 
 export const cartsModel = model(cartsCollection, cartsSchema);
 

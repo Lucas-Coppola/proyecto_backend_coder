@@ -3,13 +3,14 @@ import ProductRouter from './routes/products.router.js';
 import CartsRouter from './routes/carts.router.js';
 import ViewsRouter from './routes/views.router.js';
 import { __dirname } from './util.js';
-import handlebars from 'express-handlebars';
+// import handlebars from 'express-handlebars';
 import { Server } from 'socket.io';
 // import { productsSocket } from './server/productsServer.js';
 import productManager from './ProductManager.js';
 import fs from 'fs'
 import mongoose from 'mongoose'
 import { messagesModel } from './Dao/models/mongoDB.models.js';
+import exphbs from 'express-handlebars';
 
 const productoManager = new productManager();
 let productos = await productoManager.getProductos();
@@ -42,18 +43,28 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
 // Conectando a base de datos MongoDB Atlas
+
 mongoose.connect('mongodb+srv://coppolalucascai:H9kvrbP0SYkvDn0b@codercluster.vmldebb.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=CoderCluster');
 console.log('base de datos conectada');
 
 // Config Handlebars
-app.engine('handlebars', handlebars.engine());
-app.set('views', __dirname + '/views');
-app.set('view engine', 'handlebars');
+const hbs = exphbs.create({
+    runtimeOptions: {
+        allowProtoPropertiesByDefault: true,
+        allowProtoMethodsByDefault: true
+    }
+});
 
+app.engine('handlebars', hbs.engine);
+app.set('view engine', 'handlebars');
+app.set('views', __dirname + '/views');
+
+// Routes
 app.use('/api/products', ProductRouter);
 app.use('/api/carts', CartsRouter);
 app.use('/', ViewsRouter);
 
+// WebSocket para el chat y los productos
 socketServer.on('connection', async socket => {
     console.log('Cliente conectado');
 
