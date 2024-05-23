@@ -1,5 +1,9 @@
 <div>
     <h1>Productos</h1>
+    {{#if usuarioEncontrado}}
+    <h2>Bienvenido {{usuarioEncontrado.first_name}}!</h2>
+    <h3>Rol: {{usuarioEncontrado.role}}</h3>
+    {{/if}}
     {{#each productos}}
         <p> Nombre del producto: {{this.title}} </p>
         <p> Descripcion: {{this.descripcion}} </p>

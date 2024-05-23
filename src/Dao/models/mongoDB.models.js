@@ -4,6 +4,7 @@ import mongoosePaginate from 'mongoose-paginate-v2'
 const productsCollection = 'productos'
 const cartsCollection = 'carts'
 const messagesCollection = 'messages'
+const usersCollection = 'users'
 
 const productsSchema = new Schema({
     title: String,
@@ -33,6 +34,23 @@ const messagesSchema = new Schema([{
     message: String
 }]);
 
+const usersSchema = new Schema({
+    first_name: {
+        type: String
+    },
+    last_name: String,
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    password: String,
+    role: {
+        type: String,
+        default: 'user'
+    }
+});
+
 productsSchema.plugin(mongoosePaginate);
 
 export const productsModel = model(productsCollection, productsSchema);
@@ -44,3 +62,5 @@ cartsSchema.pre('findOne', function () {
 export const cartsModel = model(cartsCollection, cartsSchema);
 
 export const messagesModel = model(messagesCollection, messagesSchema);
+
+export const usersModel = model(usersCollection, usersSchema);

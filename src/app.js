@@ -2,6 +2,7 @@ import express from 'express';
 import ProductRouter from './routes/products.router.js';
 import CartsRouter from './routes/carts.router.js';
 import ViewsRouter from './routes/views.router.js';
+import SessionsRouter from './routes/sessions.router.js';
 import { __dirname } from './util.js';
 // import handlebars from 'express-handlebars';
 import { Server } from 'socket.io';
@@ -11,6 +12,9 @@ import fs from 'fs'
 import mongoose from 'mongoose'
 import { messagesModel } from './Dao/models/mongoDB.models.js';
 import exphbs from 'express-handlebars';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 
 const productoManager = new productManager();
 let productos = await productoManager.getProductos();
@@ -42,8 +46,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
-// Conectando a base de datos MongoDB Atlas
+//session y cookies
+app.use(cookieParser());
+app.use(session({
+    store: MongoStore.create({
+        mongoUrl: 'mongodb+srv://coppolalucascai:H9kvrbP0SYkvDn0b@codercluster.vmldebb.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=CoderCluster',
+        mongoOptions: {
+            // useNewUrlParser: true,
+            // useUnifiedTopology: true
+        },
+        ttl: 60 * 60 * 1000 * 24
+    }),
+    secret: 's3cr3etC@d3r',
+    resave: true,
+    saveUninitialized: true
+}))
 
+// Conectando a base de datos MongoDB Atlas
 mongoose.connect('mongodb+srv://coppolalucascai:H9kvrbP0SYkvDn0b@codercluster.vmldebb.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=CoderCluster');
 console.log('base de datos conectada');
 
@@ -62,6 +81,7 @@ app.set('views', __dirname + '/views');
 // Routes
 app.use('/api/products', ProductRouter);
 app.use('/api/carts', CartsRouter);
+app.use('/api/sessions', SessionsRouter);
 app.use('/', ViewsRouter);
 
 // WebSocket para el chat y los productos
