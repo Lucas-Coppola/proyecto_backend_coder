@@ -15,6 +15,8 @@ import exphbs from 'express-handlebars';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
+import passport from 'passport';
+import { initPassport } from './config/passport.config.js';
 
 const productoManager = new productManager();
 let productos = await productoManager.getProductos();
@@ -60,7 +62,10 @@ app.use(session({
     secret: 's3cr3etC@d3r',
     resave: true,
     saveUninitialized: true
-}))
+}));
+initPassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Conectando a base de datos MongoDB Atlas
 mongoose.connect('mongodb+srv://coppolalucascai:H9kvrbP0SYkvDn0b@codercluster.vmldebb.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=CoderCluster');

@@ -33,9 +33,9 @@ router.get('/products', async (req, res) => {
 
         const {docs, page, hasNextPage, hasPrevPage, nextPage, prevPage} = await productsModel.paginate({}, queryOptions);
 
-        if(req.session.user) {
+        if(req.user) {
 
-            const user = req.session.user.email
+            const user = req.user.email
 
             let usuarioEncontrado = await usersModel.findOne({email: user});
 
@@ -89,23 +89,23 @@ router.get('/cart/:cid', async (req, res) => {
 });
 
 router.get('/register', (req, res) => {
-    if(req.session.user) res.send('Usted ya esta logueado, cierre sesión y vuelva a intentar');
+    if(req.user) res.send('Usted ya esta logueado, cierre sesión y vuelva a intentar.');
     else res.render('register');
 });
 
 router.get('/login', (req, res) => {
-    if(req.session.user) res.send('Usted ya esta logueado, cierre sesión y vuelva a intentar');
+    if(req.user) res.send('Usted ya esta logueado, cierre sesión y vuelva a intentar.');
     else res.render('login');
 });
 
 router.get('/perfil', async (req, res) => {
 
-    if(req.session.user) {
-        let usuarioEncontrado = await usersModel.findOne({email: req.session.user.email});
+    if(req.user) {
+        let usuarioEncontrado = await usersModel.findOne({email: req.user.email});
 
-        if(req.session.user.email === 'adminCoder@coder.com') {
+        if(req.user.email === 'adminCoder@coder.com') {
 
-            const email = req.session.user.email
+            const email = req.user.email
 
             usuarioEncontrado = {
                 email,
