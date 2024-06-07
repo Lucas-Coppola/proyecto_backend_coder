@@ -111,7 +111,9 @@ router.get('/perfil', async (req, res) => {
                 email,
                 first_name: 'Admin Coder',
                 last_name: 'Backend',
-                role: 'admin'
+                role: 'admin',
+                cart: '66415384d58d0d8b7e91820a',
+                age: null
             }
 
            res.render('perfil', { usuarioEncontrado });

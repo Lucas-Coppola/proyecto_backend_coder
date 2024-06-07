@@ -22,7 +22,9 @@ export const initPassport = () => {
                     first_name: profile._json.name,
                     last_name: profile._json.last_name,
                     email: profile._json.email,
-                    password: ''
+                    password: '',
+                    cart: '66415384d58d0d8b7e91820a',
+                    age: 20
                 }
 
                 let result = await usersModel.create(nuevoUsuario);
@@ -42,7 +44,7 @@ export const initPassport = () => {
         passReqToCallback: true,
         usernameField: 'email'
     }, async (req, username, password, done) => {
-        const { first_name, last_name } = req.body;
+        const { first_name, last_name, age } = req.body;
 
         try {
             let usuarioEncontrado = await usersModel.findOne({ email: username });
@@ -56,11 +58,15 @@ export const initPassport = () => {
                 first_name,
                 last_name,
                 email: username,
+                age,
+                cart: '66415384d58d0d8b7e91820a',
                 password: createHash(password)
             }
 
             let result = await usersModel.create(nuevoUsuario);
+
             return done(null, result);
+
         } catch (error) {
             return done('Error al registrar usuario' + error);
         }
@@ -69,7 +75,9 @@ export const initPassport = () => {
     const hardcodedAdmin = {
         email: 'adminCoder@coder.com',
         password: 'adminCod3er123',
-        role: 'admin'
+        role: 'admin',
+        cart: '66415384d58d0d8b7e91820a',
+        age: null
     };
 
     passport.use('login', new LocalStrategy({

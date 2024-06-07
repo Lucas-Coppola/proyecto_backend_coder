@@ -45,6 +45,8 @@ const usersSchema = new Schema({
         unique: true
     },
     password: String,
+    age: Number,
+    cart: String,
     role: {
         type: String,
         default: 'user'
