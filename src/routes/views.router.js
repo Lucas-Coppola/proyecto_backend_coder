@@ -31,15 +31,15 @@ router.get('/products', async (req, res) => {
             queryOptions.sort = { precio: parseInt(sort) };
         }
 
-        const {docs, page, hasNextPage, hasPrevPage, nextPage, prevPage} = await productsModel.paginate({}, queryOptions);
+        const { docs, page, hasNextPage, hasPrevPage, nextPage, prevPage } = await productsModel.paginate({}, queryOptions);
 
-        if(req.user) {
+        if (req.user) {
 
             const user = req.user.email
 
-            let usuarioEncontrado = await usersModel.findOne({email: user});
+            let usuarioEncontrado = await usersModel.findOne({ email: user });
 
-            if(user === 'adminCoder@coder.com') {
+            if (user === 'adminCoder@coder.com') {
                 usuarioEncontrado = {
                     user,
                     first_name: 'Admin Coder',
@@ -79,7 +79,7 @@ router.get('/products', async (req, res) => {
 
 router.get('/cart/:cid', async (req, res) => {
     const id = req.params.cid;
-    const carritoEncontrado = await cartsModel.findOne({_id: id});
+    const carritoEncontrado = await cartsModel.findOne({ _id: id });
 
     const productosCarrito = carritoEncontrado.products
 
@@ -89,21 +89,23 @@ router.get('/cart/:cid', async (req, res) => {
 });
 
 router.get('/register', (req, res) => {
-    if(req.user) res.send('Usted ya esta logueado, cierre sesión y vuelva a intentar.');
+    if (req.user) res.send('Usted ya esta logueado, cierre sesión y vuelva a intentar.');
     else res.render('register');
 });
 
 router.get('/login', (req, res) => {
-    if(req.user) res.send('Usted ya esta logueado, cierre sesión y vuelva a intentar.');
+    if (req.user) res.send('Usted ya esta logueado, cierre sesión y vuelva a intentar.');
     else res.render('login');
 });
 
 router.get('/perfil', async (req, res) => {
 
-    if(req.user) {
-        let usuarioEncontrado = await usersModel.findOne({email: req.user.email});
+    if (req.user) {
+        console.log(req.user);
 
-        if(req.user.email === 'adminCoder@coder.com') {
+        let usuarioEncontrado = await usersModel.findOne({ email: req.user.email });
+
+        if (req.user.email === 'adminCoder@coder.com') {
 
             const email = req.user.email
 
@@ -116,9 +118,33 @@ router.get('/perfil', async (req, res) => {
                 age: null
             }
 
-           res.render('perfil', { usuarioEncontrado });
+            res.render('perfil', { usuarioEncontrado });
 
-        } else res.render('perfil', { usuarioEncontrado });
+        } else {
+
+            if (usuarioEncontrado.age !== null) {
+                
+                let fecha = usuarioEncontrado.age
+
+                function calcularEdad(fecha) {
+                    var hoy = new Date();
+                    var cumpleanos = new Date(fecha);
+                    var edad = hoy.getFullYear() - cumpleanos.getFullYear();
+                    var m = hoy.getMonth() - cumpleanos.getMonth();
+    
+                    if (m < 0 || (m === 0 && hoy.getDate() < cumpleanos.getDate())) {
+                        edad--;
+                    }
+    
+                    return edad;
+                }
+    
+                let edad = calcularEdad(fecha);
+    
+                res.render('perfil', { usuarioEncontrado, edad });
+
+            } else return res.render('perfil', { usuarioEncontrado });
+        }
     }
     else res.send('Usted no puede acceder a su perfil sin estar logueado.');
 

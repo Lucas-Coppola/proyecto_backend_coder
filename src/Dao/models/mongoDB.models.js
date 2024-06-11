@@ -45,7 +45,7 @@ const usersSchema = new Schema({
         unique: true
     },
     password: String,
-    age: Number,
+    age: Date,
     cart: String,
     role: {
         type: String,

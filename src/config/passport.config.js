@@ -24,7 +24,7 @@ export const initPassport = () => {
                     email: profile._json.email,
                     password: '',
                     cart: '66415384d58d0d8b7e91820a',
-                    age: 20
+                    age: null
                 }
 
                 let result = await usersModel.create(nuevoUsuario);
