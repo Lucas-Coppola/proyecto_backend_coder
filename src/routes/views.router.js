@@ -101,7 +101,7 @@ router.get('/login', (req, res) => {
 router.get('/perfil', async (req, res) => {
 
     if (req.user) {
-        console.log(req.user);
+        // console.log(req.user);
 
         let usuarioEncontrado = await usersModel.findOne({ email: req.user.email });
 

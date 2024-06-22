@@ -3,6 +3,7 @@ import local from 'passport-local';
 import { usersModel } from "../Dao/models/mongoDB.models.js";
 import { createHash, isValidPassword } from "../utils/bcrypt.js";
 import GithubStrategy from 'passport-github2';
+import { envConfig } from "./config.js";
 
 const LocalStrategy = local.Strategy;
 
@@ -73,8 +74,8 @@ export const initPassport = () => {
     }));
 
     const hardcodedAdmin = {
-        email: 'adminCoder@coder.com',
-        password: 'adminCod3er123',
+        email: envConfig.dbUser,
+        password: envConfig.dbPass,
         role: 'admin',
         cart: '66415384d58d0d8b7e91820a',
         age: null

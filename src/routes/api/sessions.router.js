@@ -1,50 +1,36 @@
 import { Router } from "express";
-import { usersModel } from "../Dao/models/mongoDB.models.js";
-import { createHash, isValidPassword } from "../utils/bcrypt.js";
+import { usersModel } from "../../Dao/models/mongoDB.models.js";
+import { createHash, isValidPassword } from "../../utils/bcrypt.js";
 import passport from "passport";
-import { auth } from "../middlewares/auth.middleware.js";
+import { auth } from "../../middlewares/auth.middleware.js";
+import SessionController from "../../controllers/sessions.controller.js";
 
 const router = Router();
 
-router.get('/github', passport.authenticate('github', {scope: [ 'user:email' ]}));
+const {
+    githubConfig,
+    githubLogin,
+    createUser,
+    getUser,
+    userLogout
+} = new SessionController();
 
-router.get('/githubcallback', passport.authenticate('github', {failureRedirect: '/login'}), (req, res) => {
-    req.session.user = req.user
-    res.redirect('http://localhost:8080/products');
-});
+router.get('/github', githubConfig);
 
-router.post('/register', passport.authenticate('register', { failureRedirect: '/api/sessions/failregister' }), async (req, res) => {
-    res.redirect('http://localhost:8080/products');
-});
+router.get('/githubcallback', passport.authenticate('github', {failureRedirect: '/login'}), githubLogin);
+
+router.post('/register', passport.authenticate('register', { failureRedirect: '/api/sessions/failregister' }), createUser);
 router.get('/failregister', (req, res) => {
     console.log('Registro fallido');
     res.send({ error: 'Registro fallido' });
 });
 
-router.post('/login', passport.authenticate('login', { failureRedirect: '/api/sessions/faillogin' }), async (req, res) => {
-
-    if (!req.user) return res.status(400).send({ status: 'error', error: 'Credenciales invalidas' });
-
-    console.log(req.user);
-
-    req.session.user = {
-        first_name: req.user.first_name,
-        last_name: req.user.last_name,
-        email: req.user.email
-    }
-
-    return res.redirect('http://localhost:8080/products');
-});
+router.post('/login', passport.authenticate('login', { failureRedirect: '/api/sessions/faillogin' }), getUser);
 router.get('/faillogin', (req, res) => {
     res.status(401).send({status: 'error', error: 'Login fallido' });
 });
 
-router.get('/logout', (req, res) => {
-    req.session.destroy(err => {
-        if (err) return res.send({ status: 'error', error: err });
-        else return res.redirect('http://localhost:8080/login');
-    });
-});
+router.get('/logout', userLogout);
 
 router.get('/current', auth, (req, res) => {
     res.send('Usuario autorizado a datos sensibles');

@@ -1,14 +1,11 @@
 import express from 'express';
-import ProductRouter from './routes/products.router.js';
-import CartsRouter from './routes/carts.router.js';
-import ViewsRouter from './routes/views.router.js';
-import SessionsRouter from './routes/sessions.router.js';
+import routerApp from './routes/index.js'
 import { __dirname } from './util.js';
 // import handlebars from 'express-handlebars';
 import { Server } from 'socket.io';
 // import { productsSocket } from './server/productsServer.js';
 import productManager from './ProductManager.js';
-import fs from 'fs'
+import fs from 'fs';
 import mongoose from 'mongoose'
 import { messagesModel } from './Dao/models/mongoDB.models.js';
 import exphbs from 'express-handlebars';
@@ -17,6 +14,7 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import { initPassport } from './config/passport.config.js';
+import { envConfig } from './config/config.js';
 
 const productoManager = new productManager();
 let productos = await productoManager.getProductos();
@@ -24,25 +22,10 @@ const path = 'productos.json'
 
 const app = express();
 
-const httpServer = app.listen(8080, error => {
+const httpServer = app.listen(envConfig.dbPort, error => {
     console.log('El servidor funciona');
 });
 const socketServer = new Server(httpServer);
-
-// app.use(productsSocket(socketServer));
-
-// function productSocket(socketServer) {
-//     return (req, res, next) => {
-//         req.socketServer = socketServer
-//         next;
-//     };
-// };
-
-// app.use(productSocket(socketServer));
-
-// export { productSocket, socketServer };
-
-// export { app, socketServer };
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -52,23 +35,24 @@ app.use(express.static(__dirname + '/public'));
 app.use(cookieParser());
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: 'mongodb+srv://coppolalucascai:H9kvrbP0SYkvDn0b@codercluster.vmldebb.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=CoderCluster',
+        mongoUrl: envConfig.dbUrl,
         mongoOptions: {
             // useNewUrlParser: true,
             // useUnifiedTopology: true
         },
         ttl: 60 * 60 * 1000 * 24
     }),
-    secret: 's3cr3etC@d3r',
+    secret: envConfig.dbSecretSession,
     resave: true,
     saveUninitialized: true
 }));
 initPassport();
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(routerApp);
 
 // Conectando a base de datos MongoDB Atlas
-mongoose.connect('mongodb+srv://coppolalucascai:H9kvrbP0SYkvDn0b@codercluster.vmldebb.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=CoderCluster');
+mongoose.connect(envConfig.dbUrl);
 console.log('base de datos conectada');
 
 // Config Handlebars
@@ -82,12 +66,6 @@ const hbs = exphbs.create({
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 app.set('views', __dirname + '/views');
-
-// Routes
-app.use('/api/products', ProductRouter);
-app.use('/api/carts', CartsRouter);
-app.use('/api/sessions', SessionsRouter);
-app.use('/', ViewsRouter);
 
 // WebSocket para el chat y los productos
 socketServer.on('connection', async socket => {
