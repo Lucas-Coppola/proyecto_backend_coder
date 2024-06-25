@@ -9,7 +9,7 @@ class CartsController {
     }
 
     getCarts = async (req, res) => {
-        const carritos = await this.cartService.find({});
+        const carritos = await this.cartService.getAll();
     
         res.send(carritos);
     }
@@ -23,7 +23,7 @@ class CartsController {
 
     getCart = async (req, res) => {
         const id = req.params.cid;
-        const carritoEncontrado = await this.cartService.findOne({_id: id});
+        const carritoEncontrado = await this.cartService.get({_id: id});
     
         res.send(carritoEncontrado);
     }
@@ -32,16 +32,18 @@ class CartsController {
         const id = req.params.cid;
         const pid = req.params.pid;
     
-        const carritoEncontrado = await this.cartService.findOne({_id: id});
-        const productoEncontrado = await this.productService.findOne({ _id: pid });
+        const carritoEncontrado = await this.cartService.get({_id: id});
+        const productoEncontrado = await this.productService.get({ _id: pid });
         const productoEnCarrito = carritoEncontrado.products.find(item => item.product._id == pid);
+        
+        console.log(productoEncontrado);
     
         if(productoEnCarrito) {
             // console.log(productoEnCarrito);
             productoEnCarrito.cantidad++;
             carritoEncontrado.markModified('products');
         } else {
-            carritoEncontrado.products.push({product: productoEncontrado.id, cantidad: 1});
+            carritoEncontrado.products.push({product: productoEncontrado._id, cantidad: 1});
         }
     
         if(!carritoEncontrado && !productoEncontrado && !productoEnCarrito) return res.send('Carrito o producto inexistente');
@@ -55,8 +57,8 @@ class CartsController {
         const id = req.params.cid;
         const pid = req.params.pid;
     
-        const carritoEncontrado = await this.cartService.findOne({_id: id});
-        const productoEncontrado = await this.productService.findOne({ _id: pid });
+        const carritoEncontrado = await this.cartService.get({_id: id});
+        const productoEncontrado = await this.productService.get({ _id: pid });
         const productoEnCarrito = carritoEncontrado.products.find(item => item.product._id == pid);
     
         if(productoEnCarrito.cantidad > 1) {
@@ -78,7 +80,7 @@ class CartsController {
     
             const id = req.params.cid;
     
-            const carritoEncontrado = await this.cartService.findOne({_id: id});
+            const carritoEncontrado = await this.cartService.get({_id: id});
         
             if(!carritoEncontrado) return res.send({status: error, payload: 'Carrito inexistente' });
         
@@ -100,8 +102,8 @@ class CartsController {
             const pid = req.params.pid;
             const { cantidad } = req.body
         
-            const carritoEncontrado = await this.cartService.findOne({_id: id});
-            const productoEncontrado = await this.productService.findOne({ _id: pid });
+            const carritoEncontrado = await this.cartService.get({_id: id});
+            const productoEncontrado = await this.productService.get({ _id: pid });
             const productoEnCarrito = carritoEncontrado.products.find(item => item.product._id == pid);
         
             productoEnCarrito.cantidad = cantidad
@@ -125,14 +127,14 @@ class CartsController {
             const { title, descripcion, precio, img, code, stock, category } = req.body
             const body = req.body
         
-            const carritoEncontrado = await this.cartService.findOne({_id: id});
+            const carritoEncontrado = await this.cartService.get({_id: id});
             const productoEnCarrito = carritoEncontrado.products.find(item => item.product._id == pid);
         
             if (!title || !descripcion || !precio || !img || !code || !stock || !category) {
                 console.log('Por favor, complete todos los campos para actualizar');
                 return res.send({ status: 'error', error: 'faltan campos' });
             } else {
-                const productoEncontrado = await this.productService.updateOne({_id: pid}, {title, descripcion, precio, img, code, stock, category});
+                const productoEncontrado = await this.productService.update({_id: pid}, {title, descripcion, precio, img, code, stock, category});
             }
         
             res.status(200).send({ status: 'success', payload: ` ${productoEnCarrito.product.title} actualizado` });

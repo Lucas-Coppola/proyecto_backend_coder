@@ -4,6 +4,7 @@ import { usersModel } from "../Dao/models/mongoDB.models.js";
 import { createHash, isValidPassword } from "../utils/bcrypt.js";
 import GithubStrategy from 'passport-github2';
 import { envConfig } from "./config.js";
+import { UsersService } from "../service/index.js";
 
 const LocalStrategy = local.Strategy;
 
@@ -16,7 +17,7 @@ export const initPassport = () => {
     }, async (accessToken, refreshToken, profile, done) => {
         try {
             console.log(profile);
-            let user = await usersModel.findOne({email: profile._json.email});
+            let user = await UsersService.get({email: profile._json.email});
 
             if(!user) {
                 let nuevoUsuario = {
@@ -28,7 +29,7 @@ export const initPassport = () => {
                     age: null
                 }
 
-                let result = await usersModel.create(nuevoUsuario);
+                let result = await UsersService.create(nuevoUsuario);
 
                 return done(null, result);
 
@@ -48,7 +49,7 @@ export const initPassport = () => {
         const { first_name, last_name, age } = req.body;
 
         try {
-            let usuarioEncontrado = await usersModel.findOne({ email: username });
+            let usuarioEncontrado = await UsersService.get({ email: username });
 
             if (usuarioEncontrado) {
                 console.log('Usuario existente');
@@ -64,7 +65,7 @@ export const initPassport = () => {
                 password: createHash(password)
             }
 
-            let result = await usersModel.create(nuevoUsuario);
+            let result = await UsersService.create(nuevoUsuario);
 
             return done(null, result);
 
@@ -94,7 +95,7 @@ export const initPassport = () => {
                 }
             }
 
-            let user = await usersModel.findOne({ email: username });
+            let user = await UsersService.get({ email: username });
 
             if (!user) {
                 console.log('Usuario inexistente');
@@ -121,7 +122,7 @@ export const initPassport = () => {
         }
 
         try {
-            let usuario = await usersModel.findOne({ email: email });
+            let usuario = await UsersService.get({ email: email });
             return done(null, usuario);
         } catch (error) {
             return done(error);

@@ -1,4 +1,5 @@
 // import { productsModel } from '../Dao/models/mongoDB.models.js';
+import { productsModel } from '../Dao/models/mongoDB.models.js';
 import { ProductsService } from '../service/index.js';
 
 class ProductController {
@@ -15,7 +16,7 @@ class ProductController {
                 queryOptions.sort = { precio: parseInt(sort) };
             }
     
-            const { docs, page, hasNextPage, hasPrevPage, nextPage, prevPage, totalPages } = await this.productService.paginate({}, queryOptions);
+            const { docs, page, hasNextPage, hasPrevPage, nextPage, prevPage, totalPages } = await productsModel.paginate({}, queryOptions);
     
             //Productos con filtro category
             const productosCategory = docs.filter(p => p.category === category);
@@ -69,7 +70,7 @@ class ProductController {
     getFilteredProducts = async (req, res) => {
         const id = req.params.pid;
     
-        const productosFiltradosId = await this.productService.findOne({ _id: id });
+        const productosFiltradosId = await this.productService.get({ _id: id });
     
         res.send(productosFiltradosId);
     }
@@ -78,7 +79,7 @@ class ProductController {
         try {
             const { title, descripcion, precio, img, code, stock, category } = req.body
     
-            const existeProducto = await this.productService.findOne({code});
+            const existeProducto = await this.productService.get({code});
     
             if (!title || !descripcion || !precio || !img || !code || !stock || !category) {
                 console.log('Por favor, complete todos los campos para agregar producto');
@@ -109,7 +110,8 @@ class ProductController {
                 console.log('Por favor, complete todos los campos para actualizar');
                 return res.send({ status: 'error', error: 'faltan campos' });
             } else {
-                const productoActualizado = await this.productService.updateOne({ _id: id }, { title, descripcion, precio, img, code, stock, category });
+                const productoActualizado = await this.productService.update({ _id: id }, req.body);
+                console.log(productoActualizado);
                 res.status(200).send({ status: 'success', payload: productoActualizado });
             }
             
@@ -122,7 +124,7 @@ class ProductController {
     deleteProduct = async (req, res) => {
         const id = req.params.pid;
     
-        const productoEliminado = await this.productService.deleteOne({ _id: id })
+        const productoEliminado = await this.productService.delete({ _id: id })
     
         res.status(200).send({ status: 'success', payload: productoEliminado });
     }
