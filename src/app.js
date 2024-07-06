@@ -15,6 +15,7 @@ import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import { initPassport } from './config/passport.config.js';
 import { envConfig } from './config/config.js';
+import { ProductsService } from './service/index.js';
 
 const productoManager = new productManager();
 let productos = await productoManager.getProductos();
@@ -62,7 +63,6 @@ const hbs = exphbs.create({
         allowProtoMethodsByDefault: true
     }
 });
-
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 app.set('views', __dirname + '/views');
@@ -73,26 +73,55 @@ socketServer.on('connection', async socket => {
 
     socket.on('producto_actualizado', async producto => {
 
-        const code = producto.code
-        const existeProducto = productos.some(producto => producto.code === code);
+        // const code = producto.code
+        // const existeProducto = productos.some(producto => producto.code === code);
 
+        // if (existeProducto) return console.log('los productos no pueden compartir el code');
+
+        // producto.id = productos.length + 1;
+        // productos.push(producto);
+        // await fs.promises.writeFile(path, JSON.stringify(productos, null, '\t'), 'utf-8');
+
+        // socketServer.emit('productos_actualizados', productos);
+       
+        // console.log(producto.code);
+        
+        // console.log(existeProducto);
+
+        let code = producto.code
+
+        const existeProducto = await ProductsService.get({ code });
+        
         if (existeProducto) return console.log('los productos no pueden compartir el code');
 
-        producto.id = productos.length + 1;
-        productos.push(producto);
-        await fs.promises.writeFile(path, JSON.stringify(productos, null, '\t'), 'utf-8');
+        await ProductsService.create(producto);
+
+        let productos = await ProductsService.getAll();
 
         socketServer.emit('productos_actualizados', productos);
     });
 
     socket.on('producto_eliminar', async data => {
+        // console.log(data);
+        // const productoEliminar = productos.filter(p => p.id != data);
+
+        // productos = productoEliminar
+        // console.log(productos);
+
+        // await fs.promises.writeFile(path, JSON.stringify(productos, null, '\t'), 'utf-8');
+
+        // socketServer.emit('productos_eliminados', productos);
+
+        // const productoEliminar = productos.filter(p => p.id != data);
+        
+        // productos = productoEliminar
+        // console.log(productos);
+
         console.log(data);
-        const productoEliminar = productos.filter(p => p.id != data);
 
-        productos = productoEliminar
-        console.log(productos);
+        await ProductsService.delete({_id: data});
 
-        await fs.promises.writeFile(path, JSON.stringify(productos, null, '\t'), 'utf-8');
+        let productos = await ProductsService.getAll();
 
         socketServer.emit('productos_eliminados', productos);
     });

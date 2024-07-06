@@ -5,6 +5,10 @@ export class SessionManager {
         this.users = usersModel
     }
 
+    async getAll() {
+        return await usersModel.find();
+    }
+
     async get(filter) {
         return await usersModel.findOne(filter);
     }

@@ -5,8 +5,8 @@ export class ProductManager {
         this.products = productsModel
     }
 
-    async getAll() {
-        return await this.products.find({});
+    async getAll(filter) {
+        return await this.products.find(filter);
     }
 
     async get(filter) {
@@ -17,8 +17,8 @@ export class ProductManager {
         return await this.products.create(nuevoProducto);
     }
 
-    async update(id, updateProduct) {
-        return await this.products.updateOne({_id: id}, updateProduct);
+    async update(id, updatedProduct) {
+        return await this.products.updateOne({_id: id}, updatedProduct);
     }
 
     async delete(id) {

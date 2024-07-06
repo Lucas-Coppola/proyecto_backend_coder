@@ -1,6 +1,7 @@
 import { Router } from "express";
 import productManager from '../ProductManager.js';
 import { cartsModel, productsModel, usersModel } from "../Dao/models/mongoDB.models.js";
+import { auth, authUser } from "../middlewares/auth.middleware.js";
 // import { productsSocket } from "../server/productsServer.js";
 // import { socketServer } from "../app.js";
 // import { productSocket } from "../app.js";
@@ -14,11 +15,11 @@ router.get('/', (req, res) => {
     res.render('home', { productos });
 });
 
-router.get('/chat', (req, res) => {
+router.get('/chat', authUser, (req, res) => {
     res.render('chat', {});
 });
 
-router.get('/realtimeproducts', (req, res) => {
+router.get('/realtimeproducts', auth, (req, res) => {
     res.render('realTimeProducts', {});
 });
 
@@ -43,7 +44,7 @@ router.get('/products', async (req, res) => {
                 usuarioEncontrado = {
                     user,
                     first_name: 'Admin Coder',
-                    role: 'admin'
+                    role: 'admin',
                 }
             }
 

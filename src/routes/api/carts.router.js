@@ -11,7 +11,8 @@ const {
     deleteProduct,
     deleteCart,
     updateQuantity,
-    updateProductFromCart
+    updateProductFromCart,
+    purchaseCart
 } = new CartsController()
 
 router.get('/', getCarts);
@@ -29,5 +30,7 @@ router.delete('/:cid', deleteCart);
 router.put('/:cid/product/:pid', updateQuantity);
 
 router.put('/:cid/updateProduct/:pid', updateProductFromCart);
+
+router.get('/:cid/purchase', purchaseCart);
 
 export default router

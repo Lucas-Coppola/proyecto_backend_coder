@@ -13,7 +13,9 @@
         <p> Id: {{this._id}} </p>
         <p> Stock: {{this.stock}}</p>
         <p> Category: {{this.category}} </p>
-        <button class="btnAgregarCarrito" data-id="{{this._id}}"> Agregar al carrito </button>
+    {{#if ../usuarioEncontrado._id}} 
+        <button class="btnAgregarCarrito" data-id="{{this._id}}"> Agregar al carrito </button> 
+    {{/if}}
         <hr>
     {{/each}}
     {{#if hasPrevPage}}

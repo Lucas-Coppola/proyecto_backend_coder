@@ -1,4 +1,7 @@
 import passport  from "passport";
+import { UserDtoCurrent } from "../dtos/users.dto.js";
+// import { UsersService } from "../service.js";
+import { UsersService } from "../service/index.js";
 
 class SessionController {
     constructor(){}
@@ -34,6 +37,42 @@ class SessionController {
             if (err) return res.send({ status: 'error', error: err });
             else return res.redirect('http://localhost:8080/login');
         });
+    }
+
+    userDataAdminAccess = async (req, res) => {
+        const users = await UsersService.getAll();
+        
+        function calcularEdad(fecha) {
+            var hoy = new Date();
+            var cumpleanos = new Date(fecha);
+            var edad = hoy.getFullYear() - cumpleanos.getFullYear();
+            var m = hoy.getMonth() - cumpleanos.getMonth();
+    
+            if (m < 0 || (m === 0 && hoy.getDate() < cumpleanos.getDate())) {
+                edad--;
+            }
+    
+            return edad;
+        }
+    
+        const UsersDtoCurrent = users.map(user => {
+            if (user.age !== null) {
+                const edad = calcularEdad(user.age);
+    
+                console.log(edad);
+    
+                const { first_name, last_name, email, role } = user
+    
+                const usersDto = new UserDtoCurrent({first_name, last_name, email, role, age: edad});
+    
+                console.log(usersDto);
+    
+                return usersDto;
+    
+            } else return new UserDtoCurrent(user);
+        });
+        
+        res.send({ status: 'Usuario autorizado a datos sensibles', payload: UsersDtoCurrent });
     }
 }
 

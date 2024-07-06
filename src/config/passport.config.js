@@ -5,6 +5,7 @@ import { createHash, isValidPassword } from "../utils/bcrypt.js";
 import GithubStrategy from 'passport-github2';
 import { envConfig } from "./config.js";
 import { UsersService } from "../service/index.js";
+import { UserDto } from "../dtos/users.dto.js";
 
 const LocalStrategy = local.Strategy;
 
@@ -59,10 +60,11 @@ export const initPassport = () => {
             let nuevoUsuario = {
                 first_name,
                 last_name,
-                email: username,
+                username,
                 age,
-                cart: '66415384d58d0d8b7e91820a',
-                password: createHash(password)
+                // cart: '66415384d58d0d8b7e91820a',
+                password: createHash(password),
+                // fullname: `${first_name} ${last_name}`
             }
 
             let result = await UsersService.create(nuevoUsuario);

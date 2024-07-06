@@ -5,6 +5,7 @@ const productsCollection = 'productos'
 const cartsCollection = 'carts'
 const messagesCollection = 'messages'
 const usersCollection = 'users'
+const ticketsCollection = 'tickets'
 
 const productsSchema = new Schema({
     title: String,
@@ -35,6 +36,9 @@ const messagesSchema = new Schema([{
 }]);
 
 const usersSchema = new Schema({
+    fullname: {
+        type: String
+    },
     first_name: {
         type: String
     },
@@ -53,6 +57,19 @@ const usersSchema = new Schema({
     }
 });
 
+const ticketSchema = new Schema({
+    code: {
+        type: String,
+        unique: true,
+        default: function() {
+            return Math.random().toString(36).substring(2, 10).toUpperCase();
+        }
+    },
+    purchase_datetime: Date,
+    amount: Number,
+    purchaser: String
+});
+
 productsSchema.plugin(mongoosePaginate);
 
 export const productsModel = model(productsCollection, productsSchema);
@@ -66,3 +83,5 @@ export const cartsModel = model(cartsCollection, cartsSchema);
 export const messagesModel = model(messagesCollection, messagesSchema);
 
 export const usersModel = model(usersCollection, usersSchema);
+
+export const ticketsModel = model(ticketsCollection, ticketSchema);

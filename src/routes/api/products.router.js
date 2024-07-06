@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import ProductController from '../../controllers/product.controller.js';
+import { auth } from '../../middlewares/auth.middleware.js';
 
 const router = Router();
 
@@ -15,10 +16,10 @@ router.get('/', getProducts);
 
 router.get('/:pid', getFilteredProducts);
 
-router.post('/', createProduct);
+router.post('/', auth, createProduct);
 
-router.put('/:pid', updateProduct);
+router.put('/:pid', auth, updateProduct);
 
-router.delete('/:pid', deleteProduct);
+router.delete('/:pid', auth, deleteProduct);
 
 export default router
