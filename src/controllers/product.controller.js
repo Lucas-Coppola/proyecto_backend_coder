@@ -1,6 +1,11 @@
 // import { productsModel } from '../Dao/models/mongoDB.models.js';
+import mongoose from 'mongoose';
 import { productsModel } from '../Dao/models/mongoDB.models.js';
+import { CustomError } from '../service/errors/CustomError.js';
+import { Error } from '../service/errors/enums.js';
+import { codeProductExistente, createProductError, notFoundProduct } from '../service/errors/info.js';
 import { ProductsService } from '../service/index.js';
+import { generateProduct } from '../utils/generateProductsMock.js';
 
 class ProductController {
     constructor() {
@@ -9,7 +14,6 @@ class ProductController {
 
     getProducts = async (req, res) => {
         try {
-            console.log(req.user);
 
             const { numPage = 1, limit = 10, sort, category } = req.query;
 
@@ -69,72 +73,152 @@ class ProductController {
         }
     }
 
-    getFilteredProducts = async (req, res) => {
-        const id = req.params.pid;
-
-        const productosFiltradosId = await this.productService.get({ _id: id });
-
-        res.send(productosFiltradosId);
-    }
-
-    createProduct = async (req, res) => {
+    getFilteredProducts = async (req, res, next) => {
         try {
-            if(req.user.role === 'admin') {
-                const { title, descripcion, precio, img, code, stock, category } = req.body
 
-                const existeProducto = await this.productService.get({ code });
-    
-                if (!title || !descripcion || !precio || !img || !code || !stock || !category) {
-                    console.log('Por favor, complete todos los campos para agregar producto');
-                    return res.send({ status: 'error', error: 'faltan campos' });
-                }
-                else if (existeProducto) {
-                    console.log('Los productos no pueden compartir el code');
-                    return res.send({ status: 'error', error: 'los productos no pueden compartir el code' });
-                }
-    
-                const productoAgregado = await this.productService.create(req.body);
-    
-                res.status(200).send({ status: 'success', payload: productoAgregado });
-            }  else return res.send('Usted debe de estar logueado y ser administrador para realizar esta tarea');
+            const id = req.params.pid;
+
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                CustomError.createError({
+                    name: 'Error al encontrar producto',
+                    cause: notFoundProduct(id),
+                    message: 'El producto no fue encontrado',
+                    code: Error.DATABASE_ERROR
+                });
+            }
+
+            const productoEncontrado = await this.productService.get({ _id: id });
+
+            if (!productoEncontrado) {
+                CustomError.createError({
+                    name: 'Error al encontrar producto',
+                    cause: notFoundProduct(id),
+                    message: 'El producto no fue encontrado',
+                    code: Error.DATABASE_ERROR
+                });
+            }
+
+            const productosFiltradosId = await this.productService.get({ _id: productoEncontrado._id });
+
+            return res.send(productosFiltradosId);
 
         } catch (error) {
-            console.log(error);
-            res.status(500).send({ error: 'Error interno del servidor.' });
+            next(error);
         }
     }
 
-    updateProduct = async (req, res) => {
-        if (req.user.role === 'admin') {
-            try {
+    createProduct = async (req, res, next) => {
+        try {
 
-                const id = req.params.pid;
-                const { title, descripcion, precio, img, code, stock, category } = req.body
+            const { title, descripcion, precio, img, code, stock, category } = req.body
 
-                if (!title || !descripcion || !precio || !img || !code || !stock || !category) {
-                    console.log('Por favor, complete todos los campos para actualizar');
-                    return res.send({ status: 'error', error: 'faltan campos' });
-                } else {
-                    const productoActualizado = await this.productService.update({ _id: id }, req.body);
-                    console.log(productoActualizado);
-                    res.status(200).send({ status: 'success', payload: productoActualizado });
-                }
+            const existeProducto = await this.productService.get({ code });
 
-            } catch (error) {
-                console.log(error);
-                return res.send({ status: 'error', error: 'Not found' });
+            if (!title || !descripcion || !precio || !img || !code || !stock || !category) {
+                // console.log('Por favor, complete todos los campos para agregar producto');
+                // return res.send({ status: 'error', error: 'faltan campos' });
+                CustomError.createError({
+                    name: 'Error al crear producto',
+                    cause: createProductError({ title, descripcion, precio, img, code, stock, category }),
+                    message: 'Faltan campos necesarios',
+                    code: Error.INVALID_TYPES_ERROR
+                });
             }
-        } else return res.send('Usted debe de estar logueado y ser administrador para realizar esta tarea');
+            else if (existeProducto) {
+                // console.log('Los productos no pueden compartir el code');
+                // return res.send({ status: 'error', error: 'los productos no pueden compartir el code' });
+                CustomError.createError({
+                    name: 'Error al crear producto',
+                    cause: codeProductExistente({ code }),
+                    message: 'Los productos no pueden compartir el code',
+                    code: Error.INVALID_TYPES_ERROR
+                });
+            }
+
+            const productoAgregado = await this.productService.create(req.body);
+
+            res.status(200).send({ status: 'success', payload: productoAgregado });
+
+        } catch (error) {
+            next(error);
+        }
     }
 
-    deleteProduct = async (req, res) => {
-        if (req.user.role === 'admin') {
+    updateProduct = async (req, res, next) => {
+        try {
+
+            const id = req.params.pid;
+            const { title, descripcion, precio, img, code, stock, category } = req.body
+
+            if (!title || !descripcion || !precio || !img || !code || !stock || !category) {
+                // console.log('Por favor, complete todos los campos para actualizar');
+                // return res.send({ status: 'error', error: 'faltan campos' });
+                CustomError.createError({
+                    name: 'Error al actualizar producto',
+                    cause: createProductError({ title, descripcion, precio, img, code, stock, category }),
+                    message: 'Faltan campos necesarios',
+                    code: Error.INVALID_TYPES_ERROR
+                });
+            } else {
+                const productoActualizado = await this.productService.update({ _id: id }, req.body);
+                console.log(productoActualizado);
+                res.status(200).send({ status: 'success', payload: productoActualizado });
+            }
+
+        } catch (error) {
+            // console.log(error);
+            // return res.send({ status: 'error', error: 'Not found' });
+            next(error);
+        }
+    }
+
+    deleteProduct = async (req, res, next) => {
+        try {
+
             const id = req.params.pid;
 
-            const productoEliminado = await this.productService.delete({ _id: id });
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                CustomError.createError({
+                    name: 'Error al encontrar producto',
+                    cause: notFoundProduct(id),
+                    message: 'El producto no fue encontrado',
+                    code: Error.DATABASE_ERROR
+                });
+            }
+
+            const productoEncontrado = await this.productService.get({ _id: id });
+
+            if (!productoEncontrado) {
+                CustomError.createError({
+                    name: 'Error al encontrar producto',
+                    cause: notFoundProduct(id),
+                    message: 'El producto no fue encontrado',
+                    code: Error.DATABASE_ERROR
+                });
+            }
+
+            const productoEliminado = await this.productService.delete({ _id: productoEncontrado._id });
 
             res.status(200).send({ status: 'success', payload: productoEliminado });
-        } else return res.send('Usted debe de estar logueado y ser administrador para realizar esta tarea');
+
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    mockingProducts = (req, res) => {
+        try {
+            let users = [];
+
+            for (let i = 0; i < 100; i++) {
+                users.push(generateProduct());
+            }
+
+            res.send({ status: 'success', payload: users });
+
+        } catch (error) {
+            console.log(error);
+        }
     }
 }
 

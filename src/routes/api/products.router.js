@@ -9,17 +9,20 @@ const {
     getFilteredProducts,
     createProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    mockingProducts
 } = new ProductController();
 
 router.get('/', getProducts);
 
+router.get('/mockingproducts', mockingProducts);
+
 router.get('/:pid', getFilteredProducts);
 
-router.post('/', auth, createProduct);
+router.post('/', createProduct);
 
-router.put('/:pid', auth, updateProduct);
+router.put('/:pid', updateProduct);
 
-router.delete('/:pid', auth, deleteProduct);
+router.delete('/:pid', deleteProduct);
 
 export default router

@@ -5,7 +5,7 @@ import { __dirname } from './util.js';
 import { Server } from 'socket.io';
 // import { productsSocket } from './server/productsServer.js';
 import productManager from './ProductManager.js';
-import fs from 'fs';
+// import fs from 'fs';
 import mongoose from 'mongoose'
 import { messagesModel } from './Dao/models/mongoDB.models.js';
 import exphbs from 'express-handlebars';
@@ -16,6 +16,7 @@ import passport from 'passport';
 import { initPassport } from './config/passport.config.js';
 import { envConfig } from './config/config.js';
 import { ProductsService } from './service/index.js';
+import { handleErrors } from './middlewares/errors/handleErrors.js';
 
 const productoManager = new productManager();
 let productos = await productoManager.getProductos();
@@ -51,6 +52,7 @@ initPassport();
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(routerApp);
+app.use((handleErrors()));
 
 // Conectando a base de datos MongoDB Atlas
 mongoose.connect(envConfig.dbUrl);
