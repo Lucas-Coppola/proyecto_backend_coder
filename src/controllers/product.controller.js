@@ -68,7 +68,7 @@ class ProductController {
             });
 
         } catch (error) {
-            console.log(error);
+            req.logger.error(error);
             res.status(500).send('Error interno del servidor');
         }
     }
@@ -79,6 +79,8 @@ class ProductController {
             const id = req.params.pid;
 
             if (!mongoose.Types.ObjectId.isValid(id)) {
+                req.logger.warning('El producto no fue encontrado');
+
                 CustomError.createError({
                     name: 'Error al encontrar producto',
                     cause: notFoundProduct(id),
@@ -90,6 +92,8 @@ class ProductController {
             const productoEncontrado = await this.productService.get({ _id: id });
 
             if (!productoEncontrado) {
+                req.logger.warning('El producto no fue encontrado');
+
                 CustomError.createError({
                     name: 'Error al encontrar producto',
                     cause: notFoundProduct(id),
@@ -103,6 +107,7 @@ class ProductController {
             return res.send(productosFiltradosId);
 
         } catch (error) {
+            req.logger.error(error);
             next(error);
         }
     }
@@ -117,6 +122,8 @@ class ProductController {
             if (!title || !descripcion || !precio || !img || !code || !stock || !category) {
                 // console.log('Por favor, complete todos los campos para agregar producto');
                 // return res.send({ status: 'error', error: 'faltan campos' });
+                req.logger.warning('Faltan campos necesarios para crear producto');
+
                 CustomError.createError({
                     name: 'Error al crear producto',
                     cause: createProductError({ title, descripcion, precio, img, code, stock, category }),
@@ -127,6 +134,8 @@ class ProductController {
             else if (existeProducto) {
                 // console.log('Los productos no pueden compartir el code');
                 // return res.send({ status: 'error', error: 'los productos no pueden compartir el code' });
+                req.logger.warning('Los productos no pueden compartir el code');
+
                 CustomError.createError({
                     name: 'Error al crear producto',
                     cause: codeProductExistente({ code }),
@@ -140,6 +149,7 @@ class ProductController {
             res.status(200).send({ status: 'success', payload: productoAgregado });
 
         } catch (error) {
+            req.logger.error(error);
             next(error);
         }
     }
@@ -153,6 +163,8 @@ class ProductController {
             if (!title || !descripcion || !precio || !img || !code || !stock || !category) {
                 // console.log('Por favor, complete todos los campos para actualizar');
                 // return res.send({ status: 'error', error: 'faltan campos' });
+                req.logger.warning('Faltan campos necesarios para actualizar el producto');
+
                 CustomError.createError({
                     name: 'Error al actualizar producto',
                     cause: createProductError({ title, descripcion, precio, img, code, stock, category }),
@@ -161,13 +173,14 @@ class ProductController {
                 });
             } else {
                 const productoActualizado = await this.productService.update({ _id: id }, req.body);
-                console.log(productoActualizado);
+                req.logger.info(productoActualizado);
                 res.status(200).send({ status: 'success', payload: productoActualizado });
             }
 
         } catch (error) {
             // console.log(error);
             // return res.send({ status: 'error', error: 'Not found' });
+            req.logger.error(error);
             next(error);
         }
     }
@@ -178,6 +191,8 @@ class ProductController {
             const id = req.params.pid;
 
             if (!mongoose.Types.ObjectId.isValid(id)) {
+                req.logger.warning('El producto no fue encontrado');
+
                 CustomError.createError({
                     name: 'Error al encontrar producto',
                     cause: notFoundProduct(id),
@@ -189,6 +204,8 @@ class ProductController {
             const productoEncontrado = await this.productService.get({ _id: id });
 
             if (!productoEncontrado) {
+                req.logger.warning('El producto no fue encontrado');
+
                 CustomError.createError({
                     name: 'Error al encontrar producto',
                     cause: notFoundProduct(id),
@@ -202,6 +219,7 @@ class ProductController {
             res.status(200).send({ status: 'success', payload: productoEliminado });
 
         } catch (error) {
+            req.logger.error(error);
             next(error);
         }
     }
@@ -217,7 +235,7 @@ class ProductController {
             res.send({ status: 'success', payload: users });
 
         } catch (error) {
-            console.log(error);
+            req.logger.error(error);
         }
     }
 }

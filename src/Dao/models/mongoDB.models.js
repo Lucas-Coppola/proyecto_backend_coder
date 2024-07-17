@@ -65,7 +65,7 @@ const ticketSchema = new Schema({
             return Math.random().toString(36).substring(2, 10).toUpperCase();
         }
     },
-    purchase_datetime: Date,
+    purchase_datetime: String,
     amount: Number,
     purchaser: String
 });

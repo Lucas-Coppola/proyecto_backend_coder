@@ -1,5 +1,6 @@
 // import { cartsModel } from '../Dao/models/mongoDB.models.js';
 // import { productsModel } from '../Dao/models/mongoDB.models.js';
+// import { logger } from '../utils/logger.js';
 import mongoose from 'mongoose';
 import { productsModel, ticketsModel } from '../Dao/models/mongoDB.models.js';
 import { CartsService, ProductsService } from '../service/index.js';
@@ -20,10 +21,15 @@ class CartsController {
     }
 
     createCart = async (req, res) => {
+        try {
 
-        const nuevoCarrito = await this.cartService.create(req.body);
+            const nuevoCarrito = await this.cartService.create(req.body);
 
-        res.status(200).send({ status: 'success', payload: nuevoCarrito });
+            res.status(200).send({ status: 'success', payload: nuevoCarrito });
+
+        } catch (error) {
+            req.logger.error(error);
+        }
     }
 
     getCart = async (req, res, next) => {
@@ -32,6 +38,8 @@ class CartsController {
             const id = req.params.cid;
 
             if (!mongoose.Types.ObjectId.isValid(id)) {
+                req.logger.warning('El carrito no fue encontrado');
+
                 CustomError.createError({
                     name: 'Error al encontrar carrito',
                     cause: notFoundCart(id),
@@ -43,6 +51,8 @@ class CartsController {
             const carritoEncontrado = await this.cartService.get({ _id: id });
 
             if (!carritoEncontrado) {
+                req.logger.warning('El carrito no fue encontrado');
+
                 CustomError.createError({
                     name: 'Error al encontrar carrito',
                     cause: notFoundCart(id),
@@ -54,6 +64,7 @@ class CartsController {
             res.send(carritoEncontrado);
 
         } catch (error) {
+            req.logger.error(error);
             next(error);
         }
     }
@@ -65,6 +76,8 @@ class CartsController {
             const pid = req.params.pid;
 
             if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(pid)) {
+                req.logger.warning('El carrito no fue encontrado');
+
                 if (!mongoose.Types.ObjectId.isValid(id)) {
                     CustomError.createError({
                         name: 'Error al encontrar carrito',
@@ -87,6 +100,8 @@ class CartsController {
 
             if (!carritoEncontrado || !productoEncontrado) {
                 if (!carritoEncontrado) {
+                    req.logger.warning('El carrito no fue encontrado');
+
                     CustomError.createError({
                         name: 'Error al encontrar carrito',
                         cause: notFoundCart(id),
@@ -94,6 +109,8 @@ class CartsController {
                         code: Error.DATABASE_ERROR
                     });
                 } else if (!productoEncontrado) {
+                    req.logger.warning('El producto no fue encontrado');
+
                     CustomError.createError({
                         name: 'Error al encontrar producto',
                         cause: notFoundProduct(pid),
@@ -111,6 +128,8 @@ class CartsController {
                     carritoEncontrado.markModified('products');
                 } else {
                     // return res.status(400).json({ error: 'La cantidad que desea supera al stock del producto' });
+                    req.logger.warning('La cantidad que desea supera al stock disponible');
+
                     CustomError.createError({
                         name: 'Error al agregar producto al carrito',
                         cause: cantidadSuperaStock(),
@@ -124,6 +143,8 @@ class CartsController {
                     carritoEncontrado.products.push({ product: productoEncontrado._id, cantidad: 1 });
                 } else {
                     // return res.status(400).json({ error: 'El stock se encuentra agotado' });
+                    req.logger.warning('Stock del producto agotado');
+
                     CustomError.createError({
                         name: 'Error al agregar producto al carrito',
                         cause: stockAgotado(productoEncontrado.title),
@@ -138,6 +159,7 @@ class CartsController {
             res.send({ status: 'success', payload: `${productoEncontrado.title} agregado al carrito` });
 
         } catch (error) {
+            req.logger.error(error);
             next(error);
         }
     }
@@ -150,6 +172,8 @@ class CartsController {
 
             if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(pid)) {
                 if (!mongoose.Types.ObjectId.isValid(id)) {
+                    req.logger.warning('El carrito no fue encontrado');
+
                     CustomError.createError({
                         name: 'Error al encontrar carrito',
                         cause: notFoundCart(id),
@@ -157,6 +181,8 @@ class CartsController {
                         code: Error.DATABASE_ERROR
                     });
                 } else {
+                    req.logger.warning('El producto no fue encontrado');
+
                     CustomError.createError({
                         name: 'Error al encontrar producto',
                         cause: notFoundProduct(pid),
@@ -171,6 +197,8 @@ class CartsController {
 
             if (!carritoEncontrado || !productoEncontrado) {
                 if (!carritoEncontrado) {
+                    req.logger.warning('El carrito no fue encontrado');
+
                     CustomError.createError({
                         name: 'Error al encontrar carrito',
                         cause: notFoundCart(id),
@@ -178,6 +206,8 @@ class CartsController {
                         code: Error.DATABASE_ERROR
                     });
                 } else if (!productoEncontrado) {
+                    req.logger.warning('El producto no fue encontrado');
+
                     CustomError.createError({
                         name: 'Error al encontrar producto',
                         cause: notFoundProduct(pid),
@@ -201,6 +231,7 @@ class CartsController {
             await carritoEncontrado.save();
 
         } catch (error) {
+            req.logger.error(error);
             next(error);
         }
 
@@ -212,6 +243,8 @@ class CartsController {
             const id = req.params.cid;
 
             if (!mongoose.Types.ObjectId.isValid(id)) {
+                req.logger.warning('El carrito no fue encontrado');
+
                 CustomError.createError({
                     name: 'Error al encontrar carrito',
                     cause: notFoundCart(id),
@@ -223,6 +256,8 @@ class CartsController {
             const carritoEncontrado = await this.cartService.get({ _id: id });
 
             if (!carritoEncontrado) {
+                req.logger.warning('El carrito no fue encontrado');
+
                 const error = CustomError.createError({
                     name: 'Error al encontrar carrito',
                     cause: notFoundCart(id),
@@ -233,14 +268,20 @@ class CartsController {
                 return next(error);
             }
 
-            carritoEncontrado.products = []
+            if(carritoEncontrado.products.length > 0) {
+                carritoEncontrado.products = []
+    
+                res.send({ status: 'success', payload: `Carrito limpiado` });
+    
+                await carritoEncontrado.save();
+            } else {
+                req.logger.warning('El carrito ya se encuentra vacío');
+            }
 
-            res.send({ status: 'success', payload: `Carrito limpiado` });
-
-            await carritoEncontrado.save();
 
         } catch (error) {
             // return res.send({ status: error, payload: 'Carrito inexistente' });
+            req.logger.error(error);
             next(error);
         }
     }
@@ -253,6 +294,8 @@ class CartsController {
 
             if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(pid)) {
                 if (!mongoose.Types.ObjectId.isValid(id)) {
+                    req.logger.warning('El carrito no fue encontrado');
+
                     CustomError.createError({
                         name: 'Error al encontrar carrito',
                         cause: notFoundCart(id),
@@ -260,6 +303,8 @@ class CartsController {
                         code: Error.DATABASE_ERROR
                     });
                 } else {
+                    req.logger.warning('El producto no fue encontrado');
+
                     CustomError.createError({
                         name: 'Error al encontrar producto',
                         cause: notFoundProduct(pid),
@@ -274,6 +319,8 @@ class CartsController {
             const carritoEncontrado = await this.cartService.get({ _id: id });
 
             if (!carritoEncontrado) {
+                req.logger.warning('El carrito no fue encontrado');
+
                 CustomError.createError({
                     name: 'Error al encontrar carrito',
                     cause: notFoundCart(id),
@@ -293,6 +340,8 @@ class CartsController {
 
                 return res.send({ status: 'success', payload: `Cantidad del ${productoEnCarrito.product.title} actualizada en el carrito` });
             } else if (!productoEnCarrito) {
+                req.logger.warning('El producto no fue encontrado en el carrito');
+
                 CustomError.createError({
                     name: 'Error al encontrar producto en carrito',
                     cause: notFoundProduct(pid),
@@ -303,6 +352,7 @@ class CartsController {
 
         } catch (error) {
             // return res.send({ status: 'error', error: `No se encuentra el carrito o producto inexistente dentro del carrito` });
+            req.logger.error(error);
             next(error);
         }
     }
@@ -315,6 +365,8 @@ class CartsController {
 
             if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(pid)) {
                 if (!mongoose.Types.ObjectId.isValid(id)) {
+                    req.logger.warning('El carrito no fue encontrado');
+
                     CustomError.createError({
                         name: 'Error al encontrar carrito',
                         cause: notFoundCart(id),
@@ -322,6 +374,8 @@ class CartsController {
                         code: Error.DATABASE_ERROR
                     });
                 } else {
+                    req.logger.warning('El producto no fue encontrado');
+
                     CustomError.createError({
                         name: 'Error al encontrar producto',
                         cause: notFoundProduct(pid),
@@ -336,6 +390,8 @@ class CartsController {
             const carritoEncontrado = await this.cartService.get({ _id: id });
 
             if (!carritoEncontrado) {
+                req.logger.warning('El carrito no fue encontrado');
+
                 CustomError.createError({
                     name: 'Error al encontrar carrito',
                     cause: notFoundCart(id),
@@ -347,6 +403,8 @@ class CartsController {
             const productoEnCarrito = carritoEncontrado.products.find(item => item.product._id == pid);
 
             if (!productoEnCarrito) {
+                req.logger.warning('El producto no fue encontrado en el carrito');
+
                 CustomError.createError({
                     name: 'Error al encontrar producto en carrito',
                     cause: notFoundProduct(pid),
@@ -358,6 +416,8 @@ class CartsController {
             if (!title || !descripcion || !precio || !img || !code || !stock || !category) {
                 // console.log('Por favor, complete todos los campos para actualizar');
                 // return res.send({ status: 'error', error: 'faltan campos' });
+                req.logger.warning('Faltan campos necesarios para actualizar producto');
+
                 CustomError.createError({
                     name: 'Error al crear producto',
                     cause: createProductError({ title, descripcion, precio, img, code, stock, category }),
@@ -374,6 +434,7 @@ class CartsController {
 
         } catch (error) {
             // return res.send({ status: 'error', error: `No se encuentra el carrito o producto inexistente dentro del carrito` });
+            req.logger.error(error);            
             next(error);
         }
     }
@@ -384,6 +445,8 @@ class CartsController {
             const id = req.params.cid;
 
             if (!mongoose.Types.ObjectId.isValid(id)) {
+                req.logger.warning('Carrito no encontrado');
+
                 CustomError.createError({
                     name: 'Error al encontrar carrito',
                     cause: notFoundCart(id),
@@ -395,6 +458,8 @@ class CartsController {
             const carritoEncontrado = await CartsService.get({ _id: id });
 
             if (!carritoEncontrado) {
+                req.logger.warning('Carrito no encontrado');
+
                 CustomError.createError({
                     name: 'Error al encontrar carrito',
                     cause: notFoundCart(id),
@@ -405,7 +470,7 @@ class CartsController {
 
             // console.log(carritoEncontrado.products);
 
-            if (carritoEncontrado.products != []) {
+            if (carritoEncontrado.products.length > 0) {
 
                 //Logica descuento de stock en base a cantidad comprada
                 const productosCarrito = carritoEncontrado.products.map(p => ({
@@ -413,13 +478,15 @@ class CartsController {
                     cantidad: p.cantidad
                 }));
 
-                console.log(productosCarrito);
+                req.logger.info(productosCarrito);
 
                 productosCarrito.forEach(async p => {
                     const productoComprado = await ProductsService.get({ _id: p.id });
-                    console.log(productoComprado);
+                    req.logger.info(productoComprado);
 
                     if (!productoComprado) {
+                        req.logger.warning('El producto no fue encontrado en el carrito');
+
                         CustomError.createError({
                             name: 'Error al encontrar producto en carrito',
                             cause: notFoundProduct(p.id),
@@ -434,7 +501,6 @@ class CartsController {
 
                     await ProductsService.update(p.id, { stock: productoComprado.stock });
                 });
-
                 //Logica creacion del ticket, precio, cantidad, create at, etc
                 const prices = carritoEncontrado.products.map(p => p.product.precio);
 
@@ -479,6 +545,7 @@ class CartsController {
         } catch (error) {
             // console.log(error);
             // return res.send({ status: 'error', error: `No se ha podido realizar la compra` });
+            req.logger.error(error);
             next(error);
         }
     }

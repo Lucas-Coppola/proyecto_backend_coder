@@ -74,7 +74,7 @@ router.get('/products', async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error);
+        req.logger.error(error);
     }
 });
 
@@ -84,7 +84,7 @@ router.get('/cart/:cid', async (req, res) => {
 
     const productosCarrito = carritoEncontrado.products
 
-    console.log(productosCarrito);
+    req.logger.info(productosCarrito);
 
     res.render('cart', { productosCarrito, id });
 });
@@ -148,7 +148,6 @@ router.get('/perfil', async (req, res) => {
         }
     }
     else res.send('Usted no puede acceder a su perfil sin estar logueado.');
-
 });
 
 export default router

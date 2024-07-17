@@ -4,7 +4,7 @@ import { __dirname } from './util.js';
 // import handlebars from 'express-handlebars';
 import { Server } from 'socket.io';
 // import { productsSocket } from './server/productsServer.js';
-import productManager from './ProductManager.js';
+// import productManager from './ProductManager.js';
 // import fs from 'fs';
 import mongoose from 'mongoose'
 import { messagesModel } from './Dao/models/mongoDB.models.js';
@@ -17,15 +17,16 @@ import { initPassport } from './config/passport.config.js';
 import { envConfig } from './config/config.js';
 import { ProductsService } from './service/index.js';
 import { handleErrors } from './middlewares/errors/handleErrors.js';
+import { addLogger, logger } from './utils/logger.js';
 
-const productoManager = new productManager();
-let productos = await productoManager.getProductos();
-const path = 'productos.json'
+// const productoManager = new productManager();
+// let productos = await productoManager.getProductos();
+// const path = 'productos.json'
 
 const app = express();
 
 const httpServer = app.listen(envConfig.dbPort, error => {
-    console.log('El servidor funciona');
+    logger.info('El servidor funciona');
 });
 const socketServer = new Server(httpServer);
 
@@ -51,12 +52,13 @@ app.use(session({
 initPassport();
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(addLogger);
 app.use(routerApp);
 app.use((handleErrors()));
 
 // Conectando a base de datos MongoDB Atlas
 mongoose.connect(envConfig.dbUrl);
-console.log('base de datos conectada');
+logger.info('base de datos conectada');
 
 // Config Handlebars
 const hbs = exphbs.create({
@@ -71,7 +73,7 @@ app.set('views', __dirname + '/views');
 
 // WebSocket para el chat y los productos
 socketServer.on('connection', async socket => {
-    console.log('Cliente conectado');
+    logger.info('Cliente conectado');
 
     socket.on('producto_actualizado', async producto => {
 
@@ -94,7 +96,7 @@ socketServer.on('connection', async socket => {
 
         const existeProducto = await ProductsService.get({ code });
         
-        if (existeProducto) return console.log('los productos no pueden compartir el code');
+        if (existeProducto) return logger.warning('los productos no pueden compartir el code');
 
         await ProductsService.create(producto);
 
@@ -119,7 +121,7 @@ socketServer.on('connection', async socket => {
         // productos = productoEliminar
         // console.log(productos);
 
-        console.log(data);
+        // console.log(data);
 
         await ProductsService.delete({_id: data});
 
@@ -129,7 +131,7 @@ socketServer.on('connection', async socket => {
     });
 
     socket.on('mensaje_enviado', async data => {
-        console.log(data);
+        // console.log(data);
 
         const messages = await messagesModel.find({});
 

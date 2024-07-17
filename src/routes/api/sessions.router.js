@@ -4,8 +4,8 @@ import { Router } from "express";
 import passport from "passport";
 import { auth } from "../../middlewares/auth.middleware.js";
 import SessionController from "../../controllers/sessions.controller.js";
-import { ProductsService, UsersService } from "../../service/index.js";
-import { UserDtoCurrent } from "../../dtos/users.dto.js";
+// import { ProductsService, UsersService } from "../../service/index.js";
+// import { UserDtoCurrent } from "../../dtos/users.dto.js";
 
 const router = Router();
 

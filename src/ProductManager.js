@@ -120,28 +120,28 @@ class productManager {
 }
 
 // MANERA ASYNC DE REPRODUCIR EL CODE
-const reproducirPrograma = async () => {
-    const productoManager = new productManager();
-    console.log(await productoManager.getProductos());
-    // await productoManager.agregarProducto('producto 1', 'gran producto', 1000, './img', 'ABC124', 2, 'consola');
-    // await productoManager.agregarProducto('producto 2', 'pesimo producto', 1000, './img', 'ABC123', 2, 'PC');
-    // await productoManager.agregarProducto('producto 3', 'medio producto', 1000, './img', 'ABC125', 2, 'consola');
-    // await productoManager.agregarProducto('producto 4', 'medio producto', 1000, './img', 'ABC122', 2, 'telefono');
-    // await productoManager.agregarProducto('producto 5', 'medio producto', 1000, './img', 'ABC126', 2, 'PC');
-    // await productoManager.agregarProducto('producto 6', 'medio producto', 1000, './img', 'ABC127', 2, 'telefono');
-    // await productoManager.agregarProducto('producto 7', 'medio producto', 1000, './img', 'ABC128', 2, 'electrodomestico');
-    // await productoManager.agregarProducto('producto 8', 'medio producto', 1000, './img', 'ABC129', 2, 'PC');
-    // await productoManager.agregarProducto('producto 9', 'medio producto', 1000, './img', 'ABC130', 2, 'consola');
-    // await productoManager.agregarProducto('producto 10', 'medio producto', 1000, './img', 'ABC131', 2, 'electrodomestico');
-    // console.log(await productoManager.getProductos());
-    // console.log(await productoManager.getProductById(3));
-    // await productoManager.updateProduct(3, undefined, undefined, 1300, undefined, undefined, 3);
-    // await productoManager.deleteProduct(3);
-    // console.log(await productoManager.getProductos());
-    // console.log(await productoManager.getProductById(3));
-    // console.log(await productoManager.getProductos());
-}
+// const reproducirPrograma = async () => {
+//     const productoManager = new productManager();
+//     console.log(await productoManager.getProductos());
+//     await productoManager.agregarProducto('producto 1', 'gran producto', 1000, './img', 'ABC124', 2, 'consola');
+//     await productoManager.agregarProducto('producto 2', 'pesimo producto', 1000, './img', 'ABC123', 2, 'PC');
+//     await productoManager.agregarProducto('producto 3', 'medio producto', 1000, './img', 'ABC125', 2, 'consola');
+//     await productoManager.agregarProducto('producto 4', 'medio producto', 1000, './img', 'ABC122', 2, 'telefono');
+//     await productoManager.agregarProducto('producto 5', 'medio producto', 1000, './img', 'ABC126', 2, 'PC');
+//     await productoManager.agregarProducto('producto 6', 'medio producto', 1000, './img', 'ABC127', 2, 'telefono');
+//     await productoManager.agregarProducto('producto 7', 'medio producto', 1000, './img', 'ABC128', 2, 'electrodomestico');
+//     await productoManager.agregarProducto('producto 8', 'medio producto', 1000, './img', 'ABC129', 2, 'PC');
+//     await productoManager.agregarProducto('producto 9', 'medio producto', 1000, './img', 'ABC130', 2, 'consola');
+//     await productoManager.agregarProducto('producto 10', 'medio producto', 1000, './img', 'ABC131', 2, 'electrodomestico');
+//     console.log(await productoManager.getProductos());
+//     console.log(await productoManager.getProductById(3));
+//     await productoManager.updateProduct(3, undefined, undefined, 1300, undefined, undefined, 3);
+//     await productoManager.deleteProduct(3);
+//     console.log(await productoManager.getProductos());
+//     console.log(await productoManager.getProductById(3));
+//     console.log(await productoManager.getProductos());
+// }
 
-reproducirPrograma();
+// reproducirPrograma();
 
 export default productManager;

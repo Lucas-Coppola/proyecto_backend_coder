@@ -21,7 +21,7 @@ class SessionController {
 
         if (!req.user) return res.status(400).send({ status: 'error', error: 'Credenciales invalidas' });
     
-        console.log(req.user);
+        req.logger.info(req.user);
     
         req.session.user = {
             first_name: req.user.first_name,
@@ -59,13 +59,13 @@ class SessionController {
             if (user.age !== null) {
                 const edad = calcularEdad(user.age);
     
-                console.log(edad);
+                req.logger.info(edad);
     
                 const { first_name, last_name, email, role } = user
     
                 const usersDto = new UserDtoCurrent({first_name, last_name, email, role, age: edad});
     
-                console.log(usersDto);
+                req.logger.info(usersDto);
     
                 return usersDto;
     

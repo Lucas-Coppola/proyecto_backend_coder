@@ -22,17 +22,6 @@
 		"status": true
 	},
 	{
-		"title": "producto 3",
-		"descripcion": "medio producto",
-		"precio": 1000,
-		"img": "./img",
-		"code": "ABC125",
-		"id": 3,
-		"stock": 2,
-		"category": "consola",
-		"status": true
-	},
-	{
 		"title": "producto 4",
 		"descripcion": "medio producto",
 		"precio": 1000,

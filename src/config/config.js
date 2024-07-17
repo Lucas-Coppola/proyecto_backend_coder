@@ -7,6 +7,7 @@ const dbPass = process.env.ADMIN_PASS;
 const dbPort = process.env.PORT;
 const dbSecretSession = process.env.DB_SECRET_SESSION;
 const dbPersistence = process.env.PERSISTENCE;
+const dbEnvironment = process.env.ENVIRONMENT
 
 export const envConfig = {
     dbUrl,
@@ -14,5 +15,6 @@ export const envConfig = {
     dbPass,
     dbPort,
     dbSecretSession,
-    dbPersistence
+    dbPersistence,
+    dbEnvironment
 }
