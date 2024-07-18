@@ -63,3 +63,12 @@ error: Esto es un mensaje de error
 fatal: Esto es un mensaje de fatal
 error: Esto es un mensaje de error
 fatal: Esto es un mensaje de fatal
+error: Esto es un mensaje de error
+fatal: Esto es un mensaje de fatal
+error: undefined {"cause":"El carrito con id: 66415384d58d0d8b7e91820, no fue encontrado","code":3,"name":"Error al encontrar carrito"}
+error: undefined
+error: undefined
+error: undefined
+error: undefined
+error: Error: Error al encontrar carrito: El carrito no fue encontrado
+error: undefined {"cause":"La cantidad que desea supera al stock disponible","code":3,"name":"Error al agregar producto al carrito"}

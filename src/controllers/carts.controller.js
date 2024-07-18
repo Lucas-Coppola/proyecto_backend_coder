@@ -50,6 +50,8 @@ class CartsController {
 
             const carritoEncontrado = await this.cartService.get({ _id: id });
 
+            // req.logger.info(carritoEncontrado);
+
             if (!carritoEncontrado) {
                 req.logger.warning('El carrito no fue encontrado');
 
@@ -470,19 +472,23 @@ class CartsController {
 
             // console.log(carritoEncontrado.products);
 
-            if (carritoEncontrado.products.length > 0) {
-
+            if (carritoEncontrado.products.length > 0) { 
                 //Logica descuento de stock en base a cantidad comprada
                 const productosCarrito = carritoEncontrado.products.map(p => ({
                     id: p.product._id,
                     cantidad: p.cantidad
                 }));
 
-                req.logger.info(productosCarrito);
+                // req.logger.info(productosCarrito);
+                req.logger.info(JSON.stringify(productosCarrito, null, 2));
+                // req.logger.info(productosCarrito);
 
                 productosCarrito.forEach(async p => {
                     const productoComprado = await ProductsService.get({ _id: p.id });
-                    req.logger.info(productoComprado);
+
+                    // console.log(productoComprado);
+                    
+                    req.logger.info(JSON.stringify(productoComprado, null, 2));
 
                     if (!productoComprado) {
                         req.logger.warning('El producto no fue encontrado en el carrito');
@@ -545,7 +551,7 @@ class CartsController {
         } catch (error) {
             // console.log(error);
             // return res.send({ status: 'error', error: `No se ha podido realizar la compra` });
-            req.logger.error(error);
+            req.logger.error(`Error: ${error}`);
             next(error);
         }
     }

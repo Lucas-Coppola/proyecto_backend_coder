@@ -96,3 +96,7 @@ router.get('/', (req, res) => {
 });
 
 export default router
+
+
+// const numeroDeProcesadores = cpus().length
+// console.log('número de hilos: ', numeroDeProcesadores)

@@ -173,7 +173,7 @@ class ProductController {
                 });
             } else {
                 const productoActualizado = await this.productService.update({ _id: id }, req.body);
-                req.logger.info(productoActualizado);
+                req.logger.info(JSON.stringify(productoActualizado, null, 2));
                 res.status(200).send({ status: 'success', payload: productoActualizado });
             }
 

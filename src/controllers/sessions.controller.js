@@ -65,7 +65,7 @@ class SessionController {
     
                 const usersDto = new UserDtoCurrent({first_name, last_name, email, role, age: edad});
     
-                req.logger.info(usersDto);
+                req.logger.info(JSON.stringify(usersDto, null, 2));
     
                 return usersDto;
     
