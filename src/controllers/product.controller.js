@@ -15,6 +15,8 @@ class ProductController {
     getProducts = async (req, res) => {
         try {
 
+            // console.log(req.user);
+
             const { numPage = 1, limit = 10, sort, category } = req.query;
 
             let queryOptions = { limit, page: numPage, lean: true };
@@ -130,8 +132,8 @@ class ProductController {
                     message: 'Faltan campos necesarios',
                     code: Error.INVALID_TYPES_ERROR
                 });
-            }
-            else if (existeProducto) {
+
+            } else if (existeProducto) {
                 // console.log('Los productos no pueden compartir el code');
                 // return res.send({ status: 'error', error: 'los productos no pueden compartir el code' });
                 req.logger.warning('Los productos no pueden compartir el code');
@@ -144,7 +146,38 @@ class ProductController {
                 });
             }
 
-            const productoAgregado = await this.productService.create(req.body);
+            let newProduct
+
+            // console.log(req.user.role);
+
+            if(req.user.role === 'premium') {
+                newProduct = {
+                    title,
+                    descripcion,
+                    precio,
+                    img,
+                    code,
+                    stock,
+                    category,
+                    owner: req.user.email
+                };
+            } else {
+                newProduct = {
+                    title,
+                    descripcion,
+                    precio,
+                    img,
+                    code,
+                    stock,
+                    category
+                };
+            }
+
+            console.log(newProduct);
+
+            const productoAgregado = await this.productService.create(newProduct);
+
+            console.log(productoAgregado);
 
             res.status(200).send({ status: 'success', payload: productoAgregado });
 

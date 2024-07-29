@@ -15,7 +15,11 @@ const productsSchema = new Schema({
     code: String,
     stock: Number,
     category: String,
-    status: Boolean
+    status: Boolean,
+    owner: {
+        type: String,
+        default: 'admin'
+    }
 });
 
 const cartsSchema = new Schema({
@@ -54,7 +58,9 @@ const usersSchema = new Schema({
     role: {
         type: String,
         default: 'user'
-    }
+    },
+    recoveryToken: { type: String },
+    recoveryTokenExpiration: { type: Date }
 });
 
 const ticketSchema = new Schema({

@@ -4,8 +4,12 @@ import { Router } from "express";
 import passport from "passport";
 import { auth } from "../../middlewares/auth.middleware.js";
 import SessionController from "../../controllers/sessions.controller.js";
+import { UsersService } from "../../service/index.js";
+// import { UsersService } from "../../service/index.js";
+// import { createHash } from "../../utils/bcrypt.js";
 // import { ProductsService, UsersService } from "../../service/index.js";
 // import { UserDtoCurrent } from "../../dtos/users.dto.js";
+// import bcrypt from 'bcrypt'
 
 const router = Router();
 
@@ -15,7 +19,10 @@ const {
     createUser,
     getUser,
     userLogout,
-    userDataAdminAccess
+    userDataAdminAccess,
+    recoverPass,
+    recoverPassByEmail,
+    updateUserRole
 } = new SessionController();
 
 router.get('/github', githubConfig);
@@ -36,5 +43,11 @@ router.get('/faillogin', (req, res) => {
 router.get('/logout', userLogout);
 
 router.get('/current', auth, userDataAdminAccess);
+
+router.get('/premium/:uid', auth, updateUserRole);
+
+router.post('/recoverPasswordByEmail', recoverPassByEmail);
+
+router.post('/recoverPassword', recoverPass);
 
 export default router

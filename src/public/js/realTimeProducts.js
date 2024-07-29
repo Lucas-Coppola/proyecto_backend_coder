@@ -73,10 +73,12 @@ socket.on('productos_actualizados', data => {
             <p> $${p.precio} </p>
             <p> ${p.img} </p>
             <p> Codigo: ${p.code} </p>
-            <p> Id: ${p.id} </p>
+            <p> Id: ${p._id} </p>
             <p> Stock: ${p.stock}</p>
             <p> Category: ${p.category} </p>
             <p> Status: ${p.status} </p>
+            <p> Owner: ${p.owner} </p>
+            <hr>
         </div>`
     );
 
@@ -96,10 +98,12 @@ socket.on('productos_eliminados', data => {
             <p> $${p.precio} </p>
             <p> ${p.img} </p>
             <p> Codigo: ${p.code} </p>
-            <p> Id: ${p.id} </p>
+            <p> Id: ${p._id} </p>
             <p> Stock: ${p.stock}</p>
             <p> Category: ${p.category} </p>
             <p> Status: ${p.status} </p>
+            <p> Owner: ${p.owner} </p>
+            <hr>
         </div>`
     );
 

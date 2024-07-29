@@ -18,6 +18,7 @@ import { envConfig } from './config/config.js';
 import { ProductsService } from './service/index.js';
 import { handleErrors } from './middlewares/errors/handleErrors.js';
 import { addLogger, logger } from './utils/logger.js';
+import methodOverride from 'method-override';
 
 // const productoManager = new productManager();
 // let productos = await productoManager.getProductos();
@@ -32,6 +33,7 @@ const socketServer = new Server(httpServer);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method'));
 app.use(express.static(__dirname + '/public'));
 
 //session y cookies
@@ -77,21 +79,6 @@ socketServer.on('connection', async socket => {
 
     socket.on('producto_actualizado', async producto => {
 
-        // const code = producto.code
-        // const existeProducto = productos.some(producto => producto.code === code);
-
-        // if (existeProducto) return console.log('los productos no pueden compartir el code');
-
-        // producto.id = productos.length + 1;
-        // productos.push(producto);
-        // await fs.promises.writeFile(path, JSON.stringify(productos, null, '\t'), 'utf-8');
-
-        // socketServer.emit('productos_actualizados', productos);
-       
-        // console.log(producto.code);
-        
-        // console.log(existeProducto);
-
         let code = producto.code
 
         const existeProducto = await ProductsService.get({ code });
@@ -106,22 +93,6 @@ socketServer.on('connection', async socket => {
     });
 
     socket.on('producto_eliminar', async data => {
-        // console.log(data);
-        // const productoEliminar = productos.filter(p => p.id != data);
-
-        // productos = productoEliminar
-        // console.log(productos);
-
-        // await fs.promises.writeFile(path, JSON.stringify(productos, null, '\t'), 'utf-8');
-
-        // socketServer.emit('productos_eliminados', productos);
-
-        // const productoEliminar = productos.filter(p => p.id != data);
-        
-        // productos = productoEliminar
-        // console.log(productos);
-
-        // console.log(data);
 
         await ProductsService.delete({_id: data});
 

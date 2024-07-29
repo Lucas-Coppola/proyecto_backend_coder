@@ -72,3 +72,13 @@ error: undefined
 error: undefined
 error: Error: Error al encontrar carrito: El carrito no fue encontrado
 error: undefined {"cause":"La cantidad que desea supera al stock disponible","code":3,"name":"Error al agregar producto al carrito"}
+error: undefined
+error: undefined
+error: undefined
+error: undefined
+error: undefined
+error: undefined
+error: undefined {"cause":"El code ABC136 ya existe y los productos no pueden compartirlo","code":2,"name":"Error al crear producto"}
+error: undefined {"cause":"El code ABC136 ya existe y los productos no pueden compartirlo","code":2,"name":"Error al crear producto"}
+error: undefined
+error: undefined

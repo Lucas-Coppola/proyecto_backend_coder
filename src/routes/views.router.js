@@ -1,7 +1,8 @@
 import { Router } from "express";
 import productManager from '../ProductManager.js';
 import { cartsModel, productsModel, usersModel } from "../Dao/models/mongoDB.models.js";
-import { auth, authUser } from "../middlewares/auth.middleware.js";
+import { auth, authUser, createProductAuth } from "../middlewares/auth.middleware.js";
+import { UsersService } from "../service/index.js";
 // import { productsSocket } from "../server/productsServer.js";
 // import { socketServer } from "../app.js";
 // import { productSocket } from "../app.js";
@@ -19,7 +20,7 @@ router.get('/chat', authUser, (req, res) => {
     res.render('chat', {});
 });
 
-router.get('/realtimeproducts', auth, (req, res) => {
+router.get('/realtimeproducts', createProductAuth, (req, res) => {
     res.render('realTimeProducts', {});
 });
 
@@ -70,7 +71,6 @@ router.get('/products', async (req, res) => {
                 prevPage,
                 queryOptions
             });
-
         }
 
     } catch (error) {
@@ -148,6 +148,22 @@ router.get('/perfil', async (req, res) => {
         }
     }
     else res.send('Usted no puede acceder a su perfil sin estar logueado.');
+});
+
+router.get('/recoverByEmail', (req, res) => {
+    res.render('emailRecover');
+});
+
+router.get('/passwordReset/:token', async (req, res) => {
+    const { token } = req.params;
+
+    const user = await UsersService.findByRecoveryToken(token);
+    if (!user) {
+        // res.status(400).send('Token inválido o expirado');
+        return res.redirect('http://localhost:8080/recoverByEmail');
+    }
+
+    res.render('passwordReset', { token });
 });
 
 export default router

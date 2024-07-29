@@ -18,9 +18,9 @@ export const initPassport = () => {
     }, async (accessToken, refreshToken, profile, done) => {
         try {
             console.log(profile);
-            let user = await UsersService.get({email: profile._json.email});
+            let user = await UsersService.get({ email: profile._json.email });
 
-            if(!user) {
+            if (!user) {
                 let nuevoUsuario = {
                     first_name: profile._json.name,
                     last_name: profile._json.last_name,
@@ -41,7 +41,7 @@ export const initPassport = () => {
         } catch (error) {
             return done(error);
         }
-    }))
+    }));
 
     passport.use('register', new LocalStrategy({
         passReqToCallback: true,
