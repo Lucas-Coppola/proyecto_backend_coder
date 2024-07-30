@@ -30,3 +30,7 @@ export const stockAgotado = p => {
 export const cantidadSuperaStock = () => {
     return `La cantidad que desea supera al stock disponible`
 }
+
+export const sameOwner = p => {
+    return `El ${p} fue creado por usted mismo, por lo que no puede agregarlo a su carrito`
+}

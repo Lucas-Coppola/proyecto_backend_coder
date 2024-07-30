@@ -15,7 +15,7 @@ class ProductController {
     getProducts = async (req, res) => {
         try {
 
-            // console.log(req.user);
+            console.log(req.user);
 
             const { numPage = 1, limit = 10, sort, category } = req.query;
 
@@ -148,9 +148,9 @@ class ProductController {
 
             let newProduct
 
-            // console.log(req.user.role);
+            // console.log(req.session);
 
-            if(req.user.role === 'premium') {
+            if (req.user.role === 'premium') {
                 newProduct = {
                     title,
                     descripcion,
@@ -247,9 +247,20 @@ class ProductController {
                 });
             }
 
-            const productoEliminado = await this.productService.delete({ _id: productoEncontrado._id });
+            if (productoEncontrado.owner === req.user.email) {
 
-            res.status(200).send({ status: 'success', payload: productoEliminado });
+                const productoEliminado = await this.productService.delete({ _id: productoEncontrado._id });
+
+                res.status(200).send({ status: 'success', payload: productoEliminado });
+
+            } else if (req.user.role === 'admin') {
+                const productoEliminado = await this.productService.delete({ _id: productoEncontrado._id });
+
+                res.status(200).send({ status: 'success', payload: productoEliminado });
+
+            } else if (req.user.role != 'admin' && productoEncontrado.owner != req.user.email) {
+                res.status(400).send({status: 'error', message: 'Solo puedes borrar aquellos productos que tu mismo creaste'});
+            }
 
         } catch (error) {
             req.logger.error(error);

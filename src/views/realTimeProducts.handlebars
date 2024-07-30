@@ -1,6 +1,6 @@
 <main>
     <h2>Agregar Producto:</h2>
-    <form id="formProductsRealTime" action="">
+    <form id="formProductsRealTime" action="http://localhost:8080/api/products" method="post">
         <input type="text" id="title" placeholder="Nombre">
         <input type="text" id="descripcion" placeholder="Descripcion">
         <input type="number" id="precio" placeholder="Precio"> 
@@ -8,6 +8,10 @@
         <input type="text" id="code" placeholder="Codigo">
         <input type="number" id="stock" placeholder="Stock">
         <input type="text" id="category" placeholder="Categoria">
+        {{!-- <input type="email"> --}}
+        {{#if role}}
+        <input type="hidden" name="emailCreator" value={{email}} id="emailCreator">
+        {{/if}}
         <button id="btnAgregar">Agregar</button>
         <button id="btnEliminar"> Eliminar </button>
     </form>

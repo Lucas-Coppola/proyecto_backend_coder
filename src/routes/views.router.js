@@ -21,7 +21,14 @@ router.get('/chat', authUser, (req, res) => {
 });
 
 router.get('/realtimeproducts', createProductAuth, (req, res) => {
-    res.render('realTimeProducts', {});
+    // console.log(req.user.email);
+
+    const email = req.user.email
+    const role = req.user.role
+    if (role === 'premium') {
+        return res.render('realTimeProducts', { email, role });
+    } else return res.render('realTimeProducts');
+
 });
 
 router.get('/products', async (req, res) => {
@@ -124,7 +131,7 @@ router.get('/perfil', async (req, res) => {
         } else {
 
             if (usuarioEncontrado.age !== null) {
-                
+
                 let fecha = usuarioEncontrado.age
 
                 function calcularEdad(fecha) {
@@ -132,16 +139,16 @@ router.get('/perfil', async (req, res) => {
                     var cumpleanos = new Date(fecha);
                     var edad = hoy.getFullYear() - cumpleanos.getFullYear();
                     var m = hoy.getMonth() - cumpleanos.getMonth();
-    
+
                     if (m < 0 || (m === 0 && hoy.getDate() < cumpleanos.getDate())) {
                         edad--;
                     }
-    
+
                     return edad;
                 }
-    
+
                 let edad = calcularEdad(fecha);
-    
+
                 res.render('perfil', { usuarioEncontrado, edad });
 
             } else return res.render('perfil', { usuarioEncontrado });

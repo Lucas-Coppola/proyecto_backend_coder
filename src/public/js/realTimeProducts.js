@@ -15,19 +15,36 @@ agregarProducto.addEventListener('click', e => {
     const codeInput = document.getElementById('code');
     const stockInput = document.getElementById('stock');
     const categoryInput = document.getElementById('category');
+    const emailInput = document.getElementById('emailCreator');
 
     if (titleInput.value == '' || descriptionInput.value == '' || precioInput.value < 0 || imgInput.value == '' || codeInput.value < 0 || stockInput.value < 0 || categoryInput.value == '') return console.log('por favor complete todos los datos');
 
-    const producto = {
-        title: titleInput.value,
-        descripcion: descriptionInput.value,
-        precio: precioInput.value,
-        img: imgInput.value,
-        code: codeInput.value,
-        stock: stockInput.value,
-        category: categoryInput.value,
-        status: true
-    };
+    let producto
+
+    if(emailInput) {
+        producto = {
+            title: titleInput.value,
+            descripcion: descriptionInput.value,
+            precio: precioInput.value,
+            img: imgInput.value,
+            code: codeInput.value,
+            stock: stockInput.value,
+            category: categoryInput.value,
+            status: true,
+            owner: emailInput.value
+        };
+    } else {
+        producto = {
+            title: titleInput.value,
+            descripcion: descriptionInput.value,
+            precio: precioInput.value,
+            img: imgInput.value,
+            code: codeInput.value,
+            stock: stockInput.value,
+            category: categoryInput.value,
+            status: true
+        };
+    }
 
     socket.emit('producto_actualizado', producto);
 
@@ -42,8 +59,11 @@ agregarProducto.addEventListener('click', e => {
 
 eliminarProducto.addEventListener('click', e => {
     e.preventDefault();
+
+    const emailInput = document.getElementById('emailCreator');
     
     let idEliminar
+
     Swal.fire({
         title: 'Eliminar Producto',
         input: 'text',
@@ -56,7 +76,15 @@ eliminarProducto.addEventListener('click', e => {
     .then(result => {
         idEliminar = result.value
         console.log(idEliminar);
-        socket.emit('producto_eliminar', idEliminar);
+
+        if(emailInput) {
+            const email = emailInput.value
+
+            console.log(email);
+
+            socket.emit('producto_eliminar', idEliminar, email);
+
+        } else socket.emit('producto_eliminar', idEliminar );
     });
 });
 

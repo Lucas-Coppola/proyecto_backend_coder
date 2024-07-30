@@ -20,7 +20,7 @@ router.get('/mockingproducts', mockingProducts);
 
 router.get('/:pid', getFilteredProducts);
 
-router.post('/', authenticateUser, createProduct);
+router.post('/', createProduct);
 
 router.put('/:pid', updateProduct);
 

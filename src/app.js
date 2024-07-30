@@ -92,9 +92,18 @@ socketServer.on('connection', async socket => {
         socketServer.emit('productos_actualizados', productos);
     });
 
-    socket.on('producto_eliminar', async data => {
+    socket.on('producto_eliminar', async (idEliminar, email) => {
 
-        await ProductsService.delete({_id: data});
+        console.log(idEliminar);
+        console.log(email);
+
+        const productoEncontrado = await ProductsService.get({_id: idEliminar});
+
+        if(productoEncontrado.owner === email) {
+            await ProductsService.delete({_id: idEliminar});
+        } else if (!email) {
+            await ProductsService.delete({_id: idEliminar});
+        }
 
         let productos = await ProductsService.getAll();
 

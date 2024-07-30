@@ -4,7 +4,7 @@
 import mongoose from 'mongoose';
 import { productsModel, ticketsModel } from '../Dao/models/mongoDB.models.js';
 import { CartsService, ProductsService } from '../service/index.js';
-import { cantidadSuperaStock, notFoundCart, notFoundProduct, stockAgotado } from '../service/errors/info.js';
+import { cantidadSuperaStock, notFoundCart, notFoundProduct, sameOwner, stockAgotado } from '../service/errors/info.js';
 import { Error } from '../service/errors/enums.js';
 import { CustomError } from '../service/errors/CustomError.js';
 
@@ -74,6 +74,8 @@ class CartsController {
     addProductToCart = async (req, res, next) => {
         try {
 
+            // console.log(req.user);
+
             const id = req.params.cid;
             const pid = req.params.pid;
 
@@ -125,10 +127,10 @@ class CartsController {
             const productoEnCarrito = carritoEncontrado.products.find(item => item.product._id == pid);
 
             if (productoEnCarrito) {
-                if (productoEncontrado.stock > productoEnCarrito.cantidad && productoEncontrado.stock > 0) {
+                if (productoEncontrado.stock > productoEnCarrito.cantidad && productoEncontrado.stock > 0 && productoEncontrado.owner != req.user.email) {
                     productoEnCarrito.cantidad++;
                     carritoEncontrado.markModified('products');
-                } else {
+                } else if (productoEncontrado.stock < productoEnCarrito.cantidad && productoEncontrado.stock <= 0) {
                     // return res.status(400).json({ error: 'La cantidad que desea supera al stock del producto' });
                     req.logger.warning('La cantidad que desea supera al stock disponible');
 
@@ -138,12 +140,21 @@ class CartsController {
                         message: 'La cantidad que desea agregar al carrito supera al stock disponible',
                         code: Error.DATABASE_ERROR
                     });
+                } else if (productoEncontrado.owner === req.user.email) {
+                    req.logger.warning('No puede agregarse al carrito un producto creado por uno mismo');
+
+                    CustomError.createError({
+                        name: 'Error al agregar producto al carrito',
+                        cause: stockAgotado(productoEncontrado.title),
+                        message: 'El producto fue agregado por usted mismo, no puede agregarlo a su carrito',
+                        code: Error.DATABASE_ERROR
+                    });
                 }
 
             } else {
-                if (productoEncontrado.stock > 0) {
+                if (productoEncontrado.stock > 0 && productoEncontrado.owner != req.user.email) {
                     carritoEncontrado.products.push({ product: productoEncontrado._id, cantidad: 1 });
-                } else {
+                } else if (productoEncontrado.stock <= 0) {
                     // return res.status(400).json({ error: 'El stock se encuentra agotado' });
                     req.logger.warning('Stock del producto agotado');
 
@@ -151,6 +162,15 @@ class CartsController {
                         name: 'Error al agregar producto al carrito',
                         cause: stockAgotado(productoEncontrado.title),
                         message: 'Stock agotado',
+                        code: Error.DATABASE_ERROR
+                    });
+                } else if (productoEncontrado.owner === req.user.email) {
+                    req.logger.warning('No puede agregarse al carrito un producto creado por uno mismo');
+
+                    CustomError.createError({
+                        name: 'Error al agregar producto al carrito',
+                        cause: sameOwner(productoEncontrado.title),
+                        message: 'El producto fue agregado por usted mismo, no puede agregarlo a su carrito',
                         code: Error.DATABASE_ERROR
                     });
                 }
@@ -270,11 +290,11 @@ class CartsController {
                 return next(error);
             }
 
-            if(carritoEncontrado.products.length > 0) {
+            if (carritoEncontrado.products.length > 0) {
                 carritoEncontrado.products = []
-    
+
                 res.send({ status: 'success', payload: `Carrito limpiado` });
-    
+
                 await carritoEncontrado.save();
             } else {
                 req.logger.warning('El carrito ya se encuentra vacío');
@@ -436,7 +456,7 @@ class CartsController {
 
         } catch (error) {
             // return res.send({ status: 'error', error: `No se encuentra el carrito o producto inexistente dentro del carrito` });
-            req.logger.error(error);            
+            req.logger.error(error);
             next(error);
         }
     }
@@ -472,7 +492,7 @@ class CartsController {
 
             // console.log(carritoEncontrado.products);
 
-            if (carritoEncontrado.products.length > 0) { 
+            if (carritoEncontrado.products.length > 0) {
                 //Logica descuento de stock en base a cantidad comprada
                 const productosCarrito = carritoEncontrado.products.map(p => ({
                     id: p.product._id,
@@ -487,7 +507,7 @@ class CartsController {
                     const productoComprado = await ProductsService.get({ _id: p.id });
 
                     // console.log(productoComprado);
-                    
+
                     req.logger.info(JSON.stringify(productoComprado, null, 2));
 
                     if (!productoComprado) {
