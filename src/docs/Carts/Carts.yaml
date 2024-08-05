@@ -1,0 +1,208 @@
+paths:
+  /api/carts:
+    get:
+      summary: Obtiene todos los carritos en la base de datos
+      tags:
+        - Carts
+      responses: 
+        "200":
+          description: 'Los carritos fueron obtenidos correctamente desde la base de datos'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Cart'
+        "500":
+          description: 'Error interno del servidor, puede deberse a la query o a un fallo del servidor'
+
+  /api/carts/:
+    post:
+      summary: Crea un carrito en la base de datos
+      tags:
+        - Carts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/createCart'  
+      responses: 
+        "200":
+          description: 'El carrito fue creado e impactado en la base de datos correctamente'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/CreatedCart'
+        "500":
+          description: 'Error interno del servidor, puede deberse a la query o a un fallo del servidor'
+        "400": 
+          description: 'Error por parte del cliente, puede deberse al body incorrectamente establecido'
+
+  /api/carts/{cid}:
+    get:
+      summary: Obtiene un carrito de la base de datos según su id
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito que se desea obtener
+          schema:
+            $type: String
+      responses: 
+        "200":
+          description: 'El carrito fue obtenido correctamente desde la base de datos'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Cart2'
+        "500":
+          description: 'Error interno del servidor, puede deberse a la query o a un fallo del servidor'
+        "400": 
+          description: 'Error por parte del cliente, puede deberse a que no existe un carrito con el id parametrado'
+
+  /api/carts/{cid}/:
+    delete:
+      summary: Limpia un carrito de la base de datos según su id
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito que se desea limpiar
+          schema:
+            $type: String
+      responses: 
+        "200":
+          description: 'El carrito fue limpiado correctamente'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/CreatedCart'
+        "500":
+          description: 'Error interno del servidor, puede deberse a la query o a un fallo del servidor'
+        "400": 
+          description: 'Error por parte del cliente, puede deberse a que no existe un carrito con el id parametrado'
+
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Id del carrito autogenerado por Mongo
+        products:
+          type: Array
+          description: Contiene todos los productos que fueron agregados al carrito
+          product:
+            type: ObjectId
+            description: Id del producto agregado
+          cantidad:
+            type: Number
+            description: Cantidad del producto agregado en el carrito
+          _id:
+            type: ObjectId
+            description: Id del producto agregado pero dentro del carrito
+      example:
+        _id: ObjectId('66415384d58d0d8b7e91820b')
+        products: [{
+          product: ObjectId('663d3a11f69d784bdeecc7a7'),
+          cantidad: 2,
+          _id: ObjectId('66a952fcfb10c540adaaa81e'),
+        }]
+    Cart2:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Id del carrito autogenerado por Mongo
+        products:
+          type: Array
+          description: Contiene todos los productos que fueron agregados al carrito
+          product:
+            type: ObjectId
+            description: Id del producto agregado
+          cantidad:
+            type: Number
+            description: Cantidad del producto agregado en el carrito
+          _id:
+            type: ObjectId
+            description: Id del producto agregado pero dentro del carrito
+          title:
+            type: String
+            description: Nombre del producto
+          descripcion:
+            type: String
+            description: Descripción del producto
+          precio:
+            type: Number
+            description: Precio del producto
+          img:
+            type: String
+            description: Imágen del producto
+          code:
+            type: String
+            description: Código del producto
+          stock:
+            type: Number
+            description: Stock del producto
+          category:
+            type: String
+            description: Categoría del producto
+          status:
+            type: Boolean
+            description: Status del producto
+          owner:
+            type: String
+            description: Creador del producto
+      example:
+        _id: ObjectId('66415384d58d0d8b7e91820b')
+        products: [{
+          product: {
+            title: Producto 20,
+            descripcion: gran producto,
+            precio: 1275,
+            img: /img,
+            code: ABC999,
+            stock: 2,
+            category: consola,
+            status: true,
+            owner: admin
+          },
+          cantidad: 2,
+          _id: ObjectId('66a952fcfb10c540adaaa81e'),
+        }]
+    CreatedCart:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Id del carrito autogenerado por Mongo
+        products:
+          type: Array
+          description: Contiene todos los productos que fueron agregados al carrito
+      example:
+        _id: ObjectId('66415384d58d0d8b7e91820b')
+        products: []
+  requestBodies:
+    createCart: 
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Id del carrito autogenerado por Mongo
+        products:
+          type: Array
+          description: Array que contiene los productos agregados al carrito
+      example:
+        products: []

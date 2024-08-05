@@ -13,4 +13,5 @@ router.use('/api/sessions', SessionsRouter);
 router.use('/', ViewsRouter);
 router.use('/loggerTest', LoggerRouter);
 
+
 export default router

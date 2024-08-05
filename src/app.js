@@ -19,6 +19,8 @@ import { ProductsService } from './service/index.js';
 import { handleErrors } from './middlewares/errors/handleErrors.js';
 import { addLogger, logger } from './utils/logger.js';
 import methodOverride from 'method-override';
+import swaggerJsDoc from 'swagger-jsdoc';
+import swaggerUiExpress from 'swagger-ui-express';
 
 // const productoManager = new productManager();
 // let productos = await productoManager.getProductos();
@@ -72,6 +74,21 @@ const hbs = exphbs.create({
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 app.set('views', __dirname + '/views');
+
+export const swaggerOptions = {
+    definition: {
+        openapi: '3.0.1',
+        info: {
+            title: 'Documentación de app ecommerce, venta de productos online',
+            description: 'API para documentar app de venta de productos online'
+        },
+    },
+    apis: [`${__dirname}/docs/**/*.yaml`]
+}
+
+const specs = swaggerJsDoc(swaggerOptions);
+
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
 // WebSocket para el chat y los productos
 socketServer.on('connection', async socket => {

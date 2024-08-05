@@ -1,0 +1,205 @@
+paths:
+  /api/products/:
+    get:
+      summary: Obtiene todos los productos de la base de datos
+      tags:
+        - Products
+      responses: 
+        "200":
+          description: 'Los productos fueron obtenidos correctamente desde la base de datos'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Product'
+        "500":
+          description: 'Error interno del servidor, puede deberse a la query o a un fallo del servidor'
+
+  /api/products:
+    post:
+      summary: Crea un producto e impacta en la base de datos
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/createProduct'
+      responses:
+        "201":
+          description: 'El producto fue creado e impactado exitosamente en la base de datos'
+          # content:
+          #   application/json:
+          #     schema:
+          #       type: array
+          #       items:
+          #         $ref: '#components/schemas/Product'
+        "400": 
+          description: 'Error por parte del cliente, puede deberse a la falta de campos necesarios o un code ya existente'
+
+  /api/products/{pid}:
+    get:
+      summary: Busca un producto en la base de datos según su id
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto que se desea obtener
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: 'El producto fue obtenido correctamente desde la base de datos'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Product'
+        "500":
+          description: 'Error interno del servidor, puede deberse a la query o a un fallo del servidor'
+        "400": 
+          description: 'Error por parte del cliente, puede deberse a que no existe producto con el id parametrado'
+
+/api/products/{pid}:
+  put:
+    summary: Actualiza un producto en la base de datos según su id
+    tags:
+      - Products
+    parameters:
+      - name: pid
+        in: path
+        required: true
+        description: Id del producto que se desea actualizar
+        schema:
+          $type: String
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#components/requestBodies/createProduct'
+    responses:
+      "200":
+        description: 'El producto fue actualizado correctamente'
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#components/schemas/Product'
+      "500":
+        description: 'Error interno del servidor, puede deberse a la query o a un fallo del servidor'
+      "400":
+        description: 'Error por parte del cliente, puede deberse a la falta de campos necesarios para la actualización de un producto o un code modificado ya exstente'
+
+/api/products/{pid}/:
+  delete:
+    summary: Elimina un producto de la base de datos según su id
+    tags:
+      - Products
+    parameters:
+      - name: pid
+        in: path
+        required: true
+        description: Id del producto que se desea eliminar
+        schema:
+          $type: String
+    responses:
+      "200":
+        description: 'El producto fue eliminado correctamente'
+        # content:
+        #   application/json:
+        #     schema:
+        #       type: array
+        #       items:
+        #         $ref: '#components/schemas/Product'
+      "500":
+        description: 'Error interno del servidor, puede deberse a la query o a un fallo del servidor'
+      "400": 
+          description: 'Error por parte del cliente, puede deberse a que no existe un producto con el id parametrado o al role del usuario'
+
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Id del producto autogenerado por Mongo
+        title:
+          type: String
+          description: Nombre del producto
+        descripcion:
+          type: String
+          description: Descripción del producto
+        precio:
+          type: Number
+          description: Precio del producto
+        img:
+          type: String
+          description: Imágen del producto
+        code:
+          type: String
+          description: Código del producto, debe de ser único
+        stock:
+          type: Number
+          description: Stock del producto
+        category:
+          type: String
+          description: Categoría del producto
+        status:
+          type: Boolean
+          description: Status del producto
+        owner:
+          type: String
+          description: Creador del producto, puede ser creado por un admin, o por el email de un usuario premium
+      example:
+        _id:  ObjectId('66352e8df3987313c37d979a')
+        title: Producto 20
+        descripcion: Gran Producto
+        precio: 1200
+        img: /img
+        code: ABC111
+        stock: 3
+        category: PC
+        status: true
+        owner: admin
+  requestBodies:
+    createProduct: 
+      type: object
+      properties:
+        title:
+          type: String
+          description: Nombre del producto
+        descripcion:
+          type: String
+          description: Descripción del producto
+        precio:
+          type: Number
+          description: Precio del producto
+        img:
+          type: String
+          description: Imágen del producto
+        code:
+          type: String
+          description: Código del producto, debe de ser único
+        stock:
+          type: Number
+          description: Stock del producto
+        category:
+          type: String
+          description: Categoría del producto
+      example:
+        title: Producto 20
+        descripcion: gran producto
+        precio: 1200
+        img: /img
+        code: ABC111
+        stock: 3
+        category: PC

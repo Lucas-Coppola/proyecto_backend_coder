@@ -15,7 +15,7 @@ class ProductController {
     getProducts = async (req, res) => {
         try {
 
-            console.log(req.user);
+            // console.log(req.user);
 
             const { numPage = 1, limit = 10, sort, category } = req.query;
 
