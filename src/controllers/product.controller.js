@@ -149,18 +149,19 @@ class ProductController {
             let newProduct
 
             // console.log(req.session);
-
-            if (req.user.role === 'premium') {
-                newProduct = {
-                    title,
-                    descripcion,
-                    precio,
-                    img,
-                    code,
-                    stock,
-                    category,
-                    owner: req.user.email
-                };
+            if(req.user) {
+                if (req.user.role === 'premium') {
+                    newProduct = {
+                        title,
+                        descripcion,
+                        precio,
+                        img,
+                        code,
+                        stock,
+                        category,
+                        owner: req.user.email
+                    };
+                } 
             } else {
                 newProduct = {
                     title,

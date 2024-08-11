@@ -137,6 +137,8 @@ class SessionController {
         try {
             const { email } = req.body
 
+            console.log(email);
+
             if (email) {
 
                 const token = crypto.randomBytes(20).toString('hex');
@@ -152,9 +154,9 @@ class SessionController {
                     to: email
                 });
 
-                return res.send(`Se ha enviado el mail de recuperación al destinatario seleccionado: ${email}`);
+                return res.status(200).send(`Se ha enviado el mail de recuperación al destinatario seleccionado: ${email}`);
 
-            } else return res.send('No se seleccionó un destinatario');
+            } else return res.status(400).send('No se seleccionó un destinatario');
 
         } catch (error) {
             res.send(error);
