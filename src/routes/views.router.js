@@ -173,4 +173,10 @@ router.get('/passwordReset/:token', async (req, res) => {
     res.render('passwordReset', { token });
 });
 
+router.get('/:uid/documents', (req, res) => {
+    // console.log(req.user);
+
+    res.render('uploads');
+});
+
 export default router

@@ -37,6 +37,8 @@ class SessionController {
 
         req.logger.info(req.user);
 
+        req.user.last_connection = Date.now();
+
         req.session.user = {
             first_name: req.user.first_name,
             last_name: req.user.last_name,
@@ -47,7 +49,13 @@ class SessionController {
         return res.redirect('http://localhost:8080/products');
     }
 
-    userLogout = (req, res) => {
+    userLogout = async (req, res) => {
+        console.log(req.user.last_connection);
+
+        req.user.last_connection = Date.now();
+
+        await req.user.save();
+
         req.session.destroy(err => {
             if (err) return res.send({ status: 'error', error: err });
             else return res.redirect('http://localhost:8080/login');

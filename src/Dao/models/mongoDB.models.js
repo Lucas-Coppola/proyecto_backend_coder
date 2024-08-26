@@ -59,6 +59,13 @@ const usersSchema = new Schema({
         type: String,
         default: 'user'
     },
+    documents: {
+        type: [{
+            name: String,
+            reference: String
+        }]
+    },
+    last_connection: Date,
     recoveryToken: { type: String },
     recoveryTokenExpiration: { type: Date }
 });

@@ -20,6 +20,10 @@ export const initPassport = () => {
             console.log(profile);
             let user = await UsersService.get({ email: profile._json.email });
 
+            user.last_connection = Date.now();
+
+            await user.save();
+
             if (!user) {
                 let nuevoUsuario = {
                     first_name: profile._json.name,
@@ -31,6 +35,10 @@ export const initPassport = () => {
                 }
 
                 let result = await UsersService.create(nuevoUsuario);
+
+                result.last_connection = Date.now();
+
+                await result.save();
 
                 return done(null, result);
 
@@ -69,6 +77,10 @@ export const initPassport = () => {
 
             let result = await UsersService.create(nuevoUsuario);
 
+            result.last_connection = Date.now();
+
+            await result.save();
+
             return done(null, result);
 
         } catch (error) {
@@ -98,6 +110,10 @@ export const initPassport = () => {
             }
 
             let user = await UsersService.get({ email: username });
+
+            user.last_connection = Date.now();
+
+            await user.save();
 
             if (!user) {
                 console.log('Usuario inexistente');

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h1>Subir Archivo</h1>
+    <!-- Formulario para subir archivo -->
+    <h2> Subir documento </h2>
+    <form action='http://localhost:8080/api/users/uploadFiles' method="POST" enctype="multipart/form-data">
+        <label>Selecciona un archivo para subir:</label>
+        <input type="file" name="myFile">
+        <input type="hidden" name="tipo" value="document">
+        <button type="submit">Subir</button>
+    </form>
+
+    <h2> Subir foto de perfil </h2>
+    <form action='http://localhost:8080/api/users/uploadFiles' method="POST" enctype="multipart/form-data">
+        <label>Selecciona un archivo para subir:</label>
+        <input type="file" name="myFile">
+        <input type="hidden" name="tipo" value="profile">
+        <button type="submit">Subir</button>
+    </form>
+
+    <h2> Subir foto de productos </h2>
+    <form action='http://localhost:8080/api/users/uploadFiles' method="POST" enctype="multipart/form-data">
+        <label>Selecciona un archivo para subir:</label>
+        <input type="file" name="myFile">
+        <input type="hidden" name="tipo" value="producto">
+        <button type="submit">Subir</button>
+    </form>
+    
+</body>
+</html>
