@@ -28,15 +28,15 @@ import swaggerUiExpress from 'swagger-ui-express';
 
 const app = express();
 
-const httpServer = app.listen(envConfig.dbPort, error => {
-    logger.info('El servidor funciona');
-});
-const socketServer = new Server(httpServer);
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(__dirname + '/public'));
+
+const httpServer = app.listen(envConfig.dbPort, error => {
+    logger.info('El servidor funciona');
+});
+const socketServer = new Server(httpServer);
 
 //session y cookies
 app.use(cookieParser());

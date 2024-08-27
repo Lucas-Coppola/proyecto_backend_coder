@@ -50,11 +50,15 @@ class SessionController {
     }
 
     userLogout = async (req, res) => {
-        console.log(req.user.last_connection);
+        // console.log(req.user.last_connection);
+        
+        const usuario = req.user
 
-        req.user.last_connection = Date.now();
+        if (usuario.email != 'adminCoder@coder.com') {
+            usuario.last_connection = Date.now();
 
-        await req.user.save();
+            await usuario.save();
+        }
 
         req.session.destroy(err => {
             if (err) return res.send({ status: 'error', error: err });
@@ -100,41 +104,41 @@ class SessionController {
 
     recoverPass = async (req, res) => {
         const { token, email, newPassword } = req.body;
-    
+
         console.log('Body:', req.body);
-    
+
         try {
             // Obtener el usuario usando el token
             const user = await UsersService.findByRecoveryToken(token);
-    
+
             // console.log(user);
-    
+
             if (user.email !== email || !newPassword) {
                 return res.status(400).json({ message: 'Email no coincide o contraseña inválida.' });
             } else if (!user) {
                 res.status(500).json({ message: 'Token inválido' });
                 return res.redirect('http://localhost:8080/recoverByEmail');
             }
-    
+
             // Verificar si la nueva contraseña es igual a la actual
             const isSamePassword = await bcrypt.compare(newPassword, user.password);
             if (isSamePassword) {
                 return res.status(400).json({ message: 'La nueva contraseña no puede ser la misma que la anterior.' });
             }
-    
+
             // Crear el hash de la nueva contraseña
             const hashedPassword = createHash(newPassword);
-    
+
             // Actualizar la contraseña del usuario
             user.password = hashedPassword;
             user.recoveryToken = null;
             user.recoveryTokenExpiration = null;
             await UsersService.save(user);
-    
+
             console.log('Contraseña actualizada correctamente');
             // return res.status(200).send({ message: 'Contraseña actualizada correctamente' });
             res.redirect('http://localhost:8080/login');
-    
+
         } catch (error) {
             console.error('Error al recuperar contraseña:', error);
             return res.status(500).send({ message: 'Error al recuperar contraseña' });
@@ -174,31 +178,31 @@ class SessionController {
     updateUserRole = async (req, res) => {
         try {
             const uid = req.params.uid;
-    
+
             const usuarioEncontrado = await UsersService.get({ _id: uid });
 
             console.log(usuarioEncontrado);
-    
-            if(!usuarioEncontrado) return res.status(400).send('El usuario no ha sido encontrado');
-            
+
+            if (!usuarioEncontrado) return res.status(400).send('El usuario no ha sido encontrado');
+
             let newRole
 
-            if(usuarioEncontrado.role === 'user') {
+            if (usuarioEncontrado.role === 'user') {
                 newRole = 'premium'
             } else if (usuarioEncontrado.role === 'premium') {
                 newRole = 'user'
             } else {
                 return res.status(400).send('Rol del usuario no válido');
             }
-    
+
             console.log(newRole);
-    
-            const roleUpdated = await UsersService.update({ _id: uid }, {role: newRole});
+
+            const roleUpdated = await UsersService.update({ _id: uid }, { role: newRole });
 
             console.log(roleUpdated);
-    
+
             res.status(200).send({ status: 'success', payload: roleUpdated });
-    
+
         } catch (error) {
             console.log(error);
             res.status(500).send({ status: 'error', message: 'Error interno del servidor' });

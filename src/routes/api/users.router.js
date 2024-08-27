@@ -8,32 +8,13 @@ import { uploader } from "../../utils/multer.js";
 
 const router = Router();
 
-const { updateUserRole } = new UsersPremiumController();
+const { 
+    updateUserRole,
+    uploaderUserFiles
+} = new UsersPremiumController();
 
 router.get('/premium/:uid', auth, updateUserRole);
 
-router.post('/uploadFiles', uploader.single('myFile'), async (req, res) => {
-
-    // console.log(req.user);
-
-    const uid = req.user._id;
-
-    const usuarioEncontrado = await UsersService.get({ _id: uid });
-
-    const uploadedFile = {
-        name: req.file.originalname,
-        reference: req.file.path
-    }
-
-    usuarioEncontrado.documents.push(uploadedFile);
-
-    await usuarioEncontrado.save();
-
-    if (!req.file) {
-        return res.send('no se puede subir el archivo');
-    }
-
-    res.send('archivo subido');
-});
+router.post('/uploadFiles', uploader.single('myFile'), uploaderUserFiles);
 
 export default router

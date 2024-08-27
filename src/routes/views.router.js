@@ -173,10 +173,13 @@ router.get('/passwordReset/:token', async (req, res) => {
     res.render('passwordReset', { token });
 });
 
-router.get('/:uid/documents', (req, res) => {
+router.get('/uploadDocuments', (req, res) => {
     // console.log(req.user);
-
-    res.render('uploads');
+    if(req.user) {
+        res.render('uploads');
+    } else {
+        res.status(400).send('Debe estar logueado para poder subir archivos');
+    }
 });
 
 export default router

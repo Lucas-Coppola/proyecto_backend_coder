@@ -62,8 +62,13 @@ const usersSchema = new Schema({
     documents: {
         type: [{
             name: String,
-            reference: String
+            reference: String,
+            value: String
         }]
+    },
+    authorized: {
+        type: Boolean,
+        default: false
     },
     last_connection: Date,
     recoveryToken: { type: String },

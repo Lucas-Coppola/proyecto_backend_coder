@@ -10,24 +10,48 @@
     <h2> Subir documento </h2>
     <form action='http://localhost:8080/api/users/uploadFiles' method="POST" enctype="multipart/form-data">
         <label>Selecciona un archivo para subir:</label>
-        <input type="file" name="myFile">
         <input type="hidden" name="tipo" value="document">
+        <input type="file" name="myFile">
         <button type="submit">Subir</button>
     </form>
 
     <h2> Subir foto de perfil </h2>
     <form action='http://localhost:8080/api/users/uploadFiles' method="POST" enctype="multipart/form-data">
         <label>Selecciona un archivo para subir:</label>
-        <input type="file" name="myFile">
         <input type="hidden" name="tipo" value="profile">
+        <input type="file" name="myFile">
         <button type="submit">Subir</button>
     </form>
 
     <h2> Subir foto de productos </h2>
     <form action='http://localhost:8080/api/users/uploadFiles' method="POST" enctype="multipart/form-data">
         <label>Selecciona un archivo para subir:</label>
-        <input type="file" name="myFile">
         <input type="hidden" name="tipo" value="producto">
+        <input type="file" name="myFile">
+        <button type="submit">Subir</button>
+    </form>
+
+    <h2> Subir Identificación </h2>
+    <form action='http://localhost:8080/api/users/uploadFiles' method="POST" enctype="multipart/form-data">
+        <label>Selecciona un archivo para subir:</label>
+        <input type="hidden" name="tipo" value="identificacion">
+        <input type="file" name="myFile">
+        <button type="submit">Subir</button>
+    </form>
+
+    <h2> Subir Comprobante de Domicilio </h2>
+    <form action='http://localhost:8080/api/users/uploadFiles' method="POST" enctype="multipart/form-data">
+        <label>Selecciona un archivo para subir:</label>
+        <input type="hidden" name="tipo" value="domicilio">
+        <input type="file" name="myFile">
+        <button type="submit">Subir</button>
+    </form>
+
+    <h2> Subir Compronante Estado de Cuenta </h2>
+    <form action='http://localhost:8080/api/users/uploadFiles' method="POST" enctype="multipart/form-data">
+        <label>Selecciona un archivo para subir:</label>
+        <input type="hidden" name="tipo" value="cuenta">
+        <input type="file" name="myFile">
         <button type="submit">Subir</button>
     </form>
     
