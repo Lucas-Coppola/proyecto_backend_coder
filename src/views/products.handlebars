@@ -15,7 +15,7 @@
         <p> Category: {{this.category}} </p>
         <p> Owner: {{this.owner}} </p>
     {{#if ../usuarioEncontrado._id}} 
-        <button class="btnAgregarCarrito" data-id="{{this._id}}"> Agregar al carrito </button> 
+        <button class="btnAgregarCarrito" data-product-id="{{this._id}}" data-cart-id="{{../usuarioEncontrado.cart}}"> Agregar al carrito </button> 
     {{/if}}
         <hr>
     {{/each}}

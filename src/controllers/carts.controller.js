@@ -466,107 +466,113 @@ class CartsController {
 
             const id = req.params.cid;
 
-            if (!mongoose.Types.ObjectId.isValid(id)) {
-                req.logger.warning('Carrito no encontrado');
+            const user = req.user
 
-                CustomError.createError({
-                    name: 'Error al encontrar carrito',
-                    cause: notFoundCart(id),
-                    message: 'El carrito no fue encontrado',
-                    code: Error.DATABASE_ERROR
-                });
-            }
+            if (id === user.cart) {
 
-            const carritoEncontrado = await CartsService.get({ _id: id });
+                if (!mongoose.Types.ObjectId.isValid(id)) {
+                    req.logger.warning('Carrito no encontrado');
 
-            if (!carritoEncontrado) {
-                req.logger.warning('Carrito no encontrado');
-
-                CustomError.createError({
-                    name: 'Error al encontrar carrito',
-                    cause: notFoundCart(id),
-                    message: 'El carrito no fue encontrado',
-                    code: Error.DATABASE_ERROR
-                });
-            }
-
-            // console.log(carritoEncontrado.products);
-
-            if (carritoEncontrado.products.length > 0) {
-                //Logica descuento de stock en base a cantidad comprada
-                const productosCarrito = carritoEncontrado.products.map(p => ({
-                    id: p.product._id,
-                    cantidad: p.cantidad
-                }));
-
-                // req.logger.info(productosCarrito);
-                req.logger.info(JSON.stringify(productosCarrito, null, 2));
-                // req.logger.info(productosCarrito);
-
-                productosCarrito.forEach(async p => {
-                    const productoComprado = await ProductsService.get({ _id: p.id });
-
-                    // console.log(productoComprado);
-
-                    req.logger.info(JSON.stringify(productoComprado, null, 2));
-
-                    if (!productoComprado) {
-                        req.logger.warning('El producto no fue encontrado en el carrito');
-
-                        CustomError.createError({
-                            name: 'Error al encontrar producto en carrito',
-                            cause: notFoundProduct(p.id),
-                            message: 'El producto no fue encontrado en el carrito',
-                            code: Error.DATABASE_ERROR
-                        });
-                    }
-
-                    if (productoComprado.stock >= p.cantidad) productoComprado.stock -= p.cantidad
-
-                    // console.log(productoComprado.stock);
-
-                    await ProductsService.update(p.id, { stock: productoComprado.stock });
-                });
-                //Logica creacion del ticket, precio, cantidad, create at, etc
-                const prices = carritoEncontrado.products.map(p => p.product.precio);
-
-                const amount = prices.reduce((cantidad, price) => cantidad + price, 0);
-
-                const timestamp = Date.now();
-
-                const fecha = new Date(timestamp);
-
-                const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-                const options = {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    userTimeZone
-                };
-
-                const fechaFormateada = fecha.toLocaleString('es-AR', options);
-
-                const nuevoTicket = {
-                    purchase_datetime: fechaFormateada,
-                    amount,
-                    purchaser: req.user.email
+                    CustomError.createError({
+                        name: 'Error al encontrar carrito',
+                        cause: notFoundCart(id),
+                        message: 'El carrito no fue encontrado',
+                        code: Error.DATABASE_ERROR
+                    });
                 }
 
-                const ticket = await ticketsModel.create(nuevoTicket);
+                const carritoEncontrado = await CartsService.get({ _id: id });
+
+                if (!carritoEncontrado) {
+                    req.logger.warning('Carrito no encontrado');
+
+                    CustomError.createError({
+                        name: 'Error al encontrar carrito',
+                        cause: notFoundCart(id),
+                        message: 'El carrito no fue encontrado',
+                        code: Error.DATABASE_ERROR
+                    });
+                }
 
                 // console.log(carritoEncontrado.products);
 
-                carritoEncontrado.products = [];
+                if (carritoEncontrado.products.length > 0) {
+                    //Logica descuento de stock en base a cantidad comprada
+                    const productosCarrito = carritoEncontrado.products.map(p => ({
+                        id: p.product._id,
+                        cantidad: p.cantidad
+                    }));
 
-                await carritoEncontrado.save();
+                    // req.logger.info(productosCarrito);
+                    req.logger.info(JSON.stringify(productosCarrito, null, 2));
+                    // req.logger.info(productosCarrito);
 
-                return res.status(200).send({ status: 'success', payload: ticket });
+                    productosCarrito.forEach(async p => {
+                        const productoComprado = await ProductsService.get({ _id: p.id });
 
-            } else return res.send('Carrito vacío, no puede realizarse ninguna compra');
+                        // console.log(productoComprado);
+
+                        req.logger.info(JSON.stringify(productoComprado, null, 2));
+
+                        if (!productoComprado) {
+                            req.logger.warning('El producto no fue encontrado en el carrito');
+
+                            CustomError.createError({
+                                name: 'Error al encontrar producto en carrito',
+                                cause: notFoundProduct(p.id),
+                                message: 'El producto no fue encontrado en el carrito',
+                                code: Error.DATABASE_ERROR
+                            });
+                        }
+
+                        if (productoComprado.stock >= p.cantidad) productoComprado.stock -= p.cantidad
+
+                        // console.log(productoComprado.stock);
+
+                        await ProductsService.update(p.id, { stock: productoComprado.stock });
+                    });
+                    //Logica creacion del ticket, precio, cantidad, create at, etc
+                    const prices = carritoEncontrado.products.map(p => p.product.precio);
+
+                    const amount = prices.reduce((cantidad, price) => cantidad + price, 0);
+
+                    const timestamp = Date.now();
+
+                    const fecha = new Date(timestamp);
+
+                    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+                    const options = {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        userTimeZone
+                    };
+
+                    const fechaFormateada = fecha.toLocaleString('es-AR', options);
+
+                    const nuevoTicket = {
+                        purchase_datetime: fechaFormateada,
+                        amount,
+                        purchaser: req.user.email
+                    }
+
+                    const ticket = await ticketsModel.create(nuevoTicket);
+
+                    // console.log(carritoEncontrado.products);
+
+                    carritoEncontrado.products = [];
+
+                    await carritoEncontrado.save();
+
+                    return res.status(200).send({ status: 'success', payload: ticket });
+
+                } else return res.send('Carrito vacío, no puede realizarse ninguna compra');
+
+            } else return res.send('El id de su carrito no coincide con el seleccionado');
 
         } catch (error) {
             // console.log(error);
@@ -578,22 +584,3 @@ class CartsController {
 }
 
 export default CartsController
-
-// const result = await Swal.fire({
-//     icon: 'question',
-//     title: 'Confirmar compra',
-//     text: `¿Está seguro que desea realizar la compra?`,
-//     showCancelButton: true,
-//     confirmButtonText: 'Confirmar',
-//     cancelButtonText: 'Cancelar'
-// }).then( async (result) => {
-//     if (result.isConfirmed) {
-//         const ticket = await ticketsModel.create(nuevoTicket);
-
-//         carritoEncontrado.products = [];
-
-//         await carritoEncontrado.save();
-
-//         return res.status(200).send({ status: 'success', payload: ticket });
-//     } else return res.status(200).send('Compra cancelada por el usuario');
-// });

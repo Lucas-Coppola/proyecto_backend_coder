@@ -72,7 +72,7 @@ const usersSchema = new Schema({
     },
     last_connection: Date,
     recoveryToken: { type: String },
-    recoveryTokenExpiration: { type: Date }
+    recoveryTokenExpiration: { type: Date },
 });
 
 const ticketSchema = new Schema({

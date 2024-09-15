@@ -4,7 +4,7 @@ import { usersModel } from "../Dao/models/mongoDB.models.js";
 import { createHash, isValidPassword } from "../utils/bcrypt.js";
 import GithubStrategy from 'passport-github2';
 import { envConfig } from "./config.js";
-import { UsersService } from "../service/index.js";
+import { CartsService, UsersService } from "../service/index.js";
 import { UserDto } from "../dtos/users.dto.js";
 
 const LocalStrategy = local.Strategy;
@@ -19,6 +19,7 @@ export const initPassport = () => {
         try {
             console.log(profile);
             let user = await UsersService.get({ email: profile._json.email });
+            const createCart = await CartsService.create();
 
             user.last_connection = Date.now();
 
@@ -30,7 +31,7 @@ export const initPassport = () => {
                     last_name: profile._json.last_name,
                     email: profile._json.email,
                     password: '',
-                    cart: '66415384d58d0d8b7e91820a',
+                    cart: createCart._id,
                     age: null
                 }
 
@@ -60,6 +61,8 @@ export const initPassport = () => {
         try {
             let usuarioEncontrado = await UsersService.get({ email: username });
 
+            let createCart = await CartsService.create();
+
             if (usuarioEncontrado) {
                 console.log('Usuario existente');
                 return done(null, false);
@@ -70,7 +73,7 @@ export const initPassport = () => {
                 last_name,
                 username,
                 age,
-                // cart: '66415384d58d0d8b7e91820a',
+                cart: createCart._id,
                 password: createHash(password),
                 // fullname: `${first_name} ${last_name}`
             }
