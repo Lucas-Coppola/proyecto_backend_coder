@@ -1,11 +1,9 @@
 import passport from "passport";
 import local from 'passport-local';
-import { usersModel } from "../Dao/models/mongoDB.models.js";
 import { createHash, isValidPassword } from "../utils/bcrypt.js";
 import GithubStrategy from 'passport-github2';
 import { envConfig } from "./config.js";
 import { CartsService, UsersService } from "../service/index.js";
-import { UserDto } from "../dtos/users.dto.js";
 
 const LocalStrategy = local.Strategy;
 

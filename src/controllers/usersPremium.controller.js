@@ -63,8 +63,6 @@ class UsersPremiumController {
     }
 
     uploaderUserFiles = async (req, res) => {
-
-        // console.log(req.user);
     
         const uid = req.user._id;
     

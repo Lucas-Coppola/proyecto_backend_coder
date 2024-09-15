@@ -3,9 +3,6 @@ import productManager from '../ProductManager.js';
 import { cartsModel, productsModel, usersModel } from "../Dao/models/mongoDB.models.js";
 import { auth, authUser, createProductAuth } from "../middlewares/auth.middleware.js";
 import { UsersService } from "../service/index.js";
-// import { productsSocket } from "../server/productsServer.js";
-// import { socketServer } from "../app.js";
-// import { productSocket } from "../app.js";
 
 const productoManager = new productManager();
 let productos = await productoManager.getProductos();
@@ -21,7 +18,6 @@ router.get('/chat', authUser, (req, res) => {
 });
 
 router.get('/realtimeproducts', createProductAuth, (req, res) => {
-    // console.log(req.user.email);
 
     const email = req.user.email
     const role = req.user.role
@@ -109,7 +105,6 @@ router.get('/login', (req, res) => {
 router.get('/perfil', async (req, res) => {
 
     if (req.user) {
-        // console.log(req.user);
 
         let usuarioEncontrado = await usersModel.findOne({ email: req.user.email });
 
@@ -166,7 +161,6 @@ router.get('/passwordReset/:token', async (req, res) => {
 
     const user = await UsersService.findByRecoveryToken(token);
     if (!user) {
-        // res.status(400).send('Token inválido o expirado');
         return res.redirect('http://localhost:8080/recoverByEmail');
     }
 
@@ -174,7 +168,6 @@ router.get('/passwordReset/:token', async (req, res) => {
 });
 
 router.get('/uploadDocuments', (req, res) => {
-    // console.log(req.user);
     if(req.user) {
         res.render('uploads');
     } else {

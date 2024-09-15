@@ -1,4 +1,3 @@
-// import { productsModel } from '../Dao/models/mongoDB.models.js';
 import mongoose from 'mongoose';
 import { productsModel } from '../Dao/models/mongoDB.models.js';
 import { CustomError } from '../service/errors/CustomError.js';
@@ -14,8 +13,6 @@ class ProductController {
 
     getProducts = async (req, res) => {
         try {
-
-            // console.log(req.user);
 
             const { numPage = 1, limit = 10, sort, category } = req.query;
 
@@ -122,8 +119,6 @@ class ProductController {
             const existeProducto = await this.productService.get({ code });
 
             if (!title || !descripcion || !precio || !img || !code || !stock || !category) {
-                // console.log('Por favor, complete todos los campos para agregar producto');
-                // return res.send({ status: 'error', error: 'faltan campos' });
                 req.logger.warning('Faltan campos necesarios para crear producto');
 
                 CustomError.createError({
@@ -134,8 +129,6 @@ class ProductController {
                 });
 
             } else if (existeProducto) {
-                // console.log('Los productos no pueden compartir el code');
-                // return res.send({ status: 'error', error: 'los productos no pueden compartir el code' });
                 req.logger.warning('Los productos no pueden compartir el code');
 
                 CustomError.createError({
@@ -148,7 +141,6 @@ class ProductController {
 
             let newProduct
 
-            // console.log(req.session);
             if(req.user) {
                 if (req.user.role === 'premium') {
                     newProduct = {
@@ -195,8 +187,6 @@ class ProductController {
             const { title, descripcion, precio, img, code, stock, category } = req.body
 
             if (!title || !descripcion || !precio || !img || !code || !stock || !category) {
-                // console.log('Por favor, complete todos los campos para actualizar');
-                // return res.send({ status: 'error', error: 'faltan campos' });
                 req.logger.warning('Faltan campos necesarios para actualizar el producto');
 
                 CustomError.createError({
@@ -212,8 +202,6 @@ class ProductController {
             }
 
         } catch (error) {
-            // console.log(error);
-            // return res.send({ status: 'error', error: 'Not found' });
             req.logger.error(error);
             next(error);
         }

@@ -1,11 +1,7 @@
 import express from 'express';
 import routerApp from './routes/index.js'
 import { __dirname } from './util.js';
-// import handlebars from 'express-handlebars';
 import { Server } from 'socket.io';
-// import { productsSocket } from './server/productsServer.js';
-// import productManager from './ProductManager.js';
-// import fs from 'fs';
 import mongoose from 'mongoose'
 import { messagesModel } from './Dao/models/mongoDB.models.js';
 import exphbs from 'express-handlebars';
@@ -21,10 +17,6 @@ import { addLogger, logger } from './utils/logger.js';
 import methodOverride from 'method-override';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
-
-// const productoManager = new productManager();
-// let productos = await productoManager.getProductos();
-// const path = 'productos.json'
 
 const app = express();
 
@@ -128,7 +120,6 @@ socketServer.on('connection', async socket => {
     });
 
     socket.on('mensaje_enviado', async data => {
-        // console.log(data);
 
         const messages = await messagesModel.find({});
 

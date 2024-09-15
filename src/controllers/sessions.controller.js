@@ -1,11 +1,9 @@
 import passport from "passport";
 import { UserDtoCurrent } from "../dtos/users.dto.js";
-// import { UsersService } from "../service.js";
 import { UsersService } from "../service/index.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import crypto from 'crypto'
 import bcrypt from 'bcrypt'
-// import { UsersService } from "../../service/index.js";
 import { createHash } from "../utils/bcrypt.js"
 
 class SessionController {
@@ -19,15 +17,6 @@ class SessionController {
     }
 
     createUser = async (req, res) => {
-        // req.session.user = req.user
-
-        // req.user = {
-        //     first_name: req.user.first_name,
-        //     last_name: req.user.last_name,
-        //     email: req.user.email,
-        //     role: req.user.role
-        // }
-
         res.redirect('http://localhost:8080/products');
     }
 
@@ -50,8 +39,7 @@ class SessionController {
     }
 
     userLogout = async (req, res) => {
-        // console.log(req.user.last_connection);
-        
+
         const usuario = req.user
 
         if (usuario.email != 'adminCoder@coder.com') {
@@ -111,8 +99,6 @@ class SessionController {
             // Obtener el usuario usando el token
             const user = await UsersService.findByRecoveryToken(token);
 
-            // console.log(user);
-
             if (user.email !== email || !newPassword) {
                 return res.status(400).json({ message: 'Email no coincide o contraseña inválida.' });
             } else if (!user) {
@@ -136,7 +122,7 @@ class SessionController {
             await UsersService.save(user);
 
             console.log('Contraseña actualizada correctamente');
-            // return res.status(200).send({ message: 'Contraseña actualizada correctamente' });
+            
             res.redirect('http://localhost:8080/login');
 
         } catch (error) {

@@ -30,12 +30,6 @@ paths:
       responses:
         "201":
           description: 'El producto fue creado e impactado exitosamente en la base de datos'
-          # content:
-          #   application/json:
-          #     schema:
-          #       type: array
-          #       items:
-          #         $ref: '#components/schemas/Product'
         "400": 
           description: 'Error por parte del cliente, puede deberse a la falta de campos necesarios o un code ya existente'
 

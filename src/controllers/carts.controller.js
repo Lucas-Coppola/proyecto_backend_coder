@@ -1,6 +1,3 @@
-// import { cartsModel } from '../Dao/models/mongoDB.models.js';
-// import { productsModel } from '../Dao/models/mongoDB.models.js';
-// import { logger } from '../utils/logger.js';
 import mongoose from 'mongoose';
 import { productsModel, ticketsModel } from '../Dao/models/mongoDB.models.js';
 import { CartsService, ProductsService } from '../service/index.js';
@@ -50,7 +47,6 @@ class CartsController {
 
             const carritoEncontrado = await this.cartService.get({ _id: id });
 
-            // req.logger.info(carritoEncontrado);
 
             if (!carritoEncontrado) {
                 req.logger.warning('El carrito no fue encontrado');
@@ -73,8 +69,6 @@ class CartsController {
 
     addProductToCart = async (req, res, next) => {
         try {
-
-            // console.log(req.user);
 
             const id = req.params.cid;
             const pid = req.params.pid;
@@ -131,7 +125,6 @@ class CartsController {
                     productoEnCarrito.cantidad++;
                     carritoEncontrado.markModified('products');
                 } else if (productoEncontrado.stock < productoEnCarrito.cantidad && productoEncontrado.stock <= 0) {
-                    // return res.status(400).json({ error: 'La cantidad que desea supera al stock del producto' });
                     req.logger.warning('La cantidad que desea supera al stock disponible');
 
                     CustomError.createError({
@@ -155,7 +148,6 @@ class CartsController {
                 if (productoEncontrado.stock > 0 && productoEncontrado.owner != req.user.email) {
                     carritoEncontrado.products.push({ product: productoEncontrado._id, cantidad: 1 });
                 } else if (productoEncontrado.stock <= 0) {
-                    // return res.status(400).json({ error: 'El stock se encuentra agotado' });
                     req.logger.warning('Stock del producto agotado');
 
                     CustomError.createError({
@@ -302,7 +294,6 @@ class CartsController {
 
 
         } catch (error) {
-            // return res.send({ status: error, payload: 'Carrito inexistente' });
             req.logger.error(error);
             next(error);
         }
@@ -351,7 +342,6 @@ class CartsController {
                 });
             }
 
-            // const productoEncontrado = await this.productService.get({ _id: pid });
             const productoEnCarrito = carritoEncontrado.products.find(item => item.product._id == pid);
 
             if (productoEnCarrito) {
@@ -373,7 +363,6 @@ class CartsController {
             }
 
         } catch (error) {
-            // return res.send({ status: 'error', error: `No se encuentra el carrito o producto inexistente dentro del carrito` });
             req.logger.error(error);
             next(error);
         }
@@ -436,8 +425,6 @@ class CartsController {
             }
 
             if (!title || !descripcion || !precio || !img || !code || !stock || !category) {
-                // console.log('Por favor, complete todos los campos para actualizar');
-                // return res.send({ status: 'error', error: 'faltan campos' });
                 req.logger.warning('Faltan campos necesarios para actualizar producto');
 
                 CustomError.createError({
@@ -455,7 +442,6 @@ class CartsController {
             await carritoEncontrado.save();
 
         } catch (error) {
-            // return res.send({ status: 'error', error: `No se encuentra el carrito o producto inexistente dentro del carrito` });
             req.logger.error(error);
             next(error);
         }
@@ -494,8 +480,6 @@ class CartsController {
                     });
                 }
 
-                // console.log(carritoEncontrado.products);
-
                 if (carritoEncontrado.products.length > 0) {
                     //Logica descuento de stock en base a cantidad comprada
                     const productosCarrito = carritoEncontrado.products.map(p => ({
@@ -503,14 +487,10 @@ class CartsController {
                         cantidad: p.cantidad
                     }));
 
-                    // req.logger.info(productosCarrito);
                     req.logger.info(JSON.stringify(productosCarrito, null, 2));
-                    // req.logger.info(productosCarrito);
 
                     productosCarrito.forEach(async p => {
                         const productoComprado = await ProductsService.get({ _id: p.id });
-
-                        // console.log(productoComprado);
 
                         req.logger.info(JSON.stringify(productoComprado, null, 2));
 
@@ -527,10 +507,9 @@ class CartsController {
 
                         if (productoComprado.stock >= p.cantidad) productoComprado.stock -= p.cantidad
 
-                        // console.log(productoComprado.stock);
-
                         await ProductsService.update(p.id, { stock: productoComprado.stock });
                     });
+
                     //Logica creacion del ticket, precio, cantidad, create at, etc
                     const prices = carritoEncontrado.products.map(p => p.product.precio);
 
@@ -562,8 +541,6 @@ class CartsController {
 
                     const ticket = await ticketsModel.create(nuevoTicket);
 
-                    // console.log(carritoEncontrado.products);
-
                     carritoEncontrado.products = [];
 
                     await carritoEncontrado.save();
@@ -575,8 +552,6 @@ class CartsController {
             } else return res.send('El id de su carrito no coincide con el seleccionado');
 
         } catch (error) {
-            // console.log(error);
-            // return res.send({ status: 'error', error: `No se ha podido realizar la compra` });
             req.logger.error(`Error: ${error}`);
             next(error);
         }
